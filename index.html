@@ -1,0 +1,258 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Showlist — concerts near you, as a playlist</title>
+    <meta
+      name="description"
+      content="Scan for upcoming concerts near you and turn the lineup into a Spotify or YouTube playlist. Runs entirely in your browser."
+    />
+    <link rel="stylesheet" href="styles.css" />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ctext y='26' font-size='26'%3E%F0%9F%8E%B8%3C/text%3E%3C/svg%3E"
+    />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true">◍</span>
+        <div>
+          <h1>Showlist</h1>
+          <p>Who's playing near you, as a playlist.</p>
+        </div>
+      </div>
+      <div class="topbar-actions">
+        <button type="button" class="chip" id="spotifyChip" data-service="spotify">
+          <span class="dot"></span>Spotify
+        </button>
+        <button type="button" class="chip" id="youtubeChip" data-service="youtube">
+          <span class="dot"></span>YouTube
+        </button>
+        <button type="button" class="btn btn-ghost" id="setupBtn">Setup</button>
+      </div>
+    </header>
+
+    <main>
+      <section class="card controls" aria-labelledby="controls-heading">
+        <h2 id="controls-heading" class="sr-only">Search settings</h2>
+
+        <div class="control-grid">
+          <div class="field field-wide">
+            <label for="location">Where</label>
+            <div class="input-row">
+              <input
+                type="text"
+                id="location"
+                placeholder="City or ZIP — e.g. Austin, TX or 78701"
+                autocomplete="postal-code"
+              />
+              <button type="button" class="btn btn-ghost" id="locate" title="Use my location">
+                Use my location
+              </button>
+            </div>
+            <p class="hint" id="placeHint"></p>
+          </div>
+
+          <div class="field">
+            <label for="radius">Within</label>
+            <select id="radius">
+              <option value="10">10 miles</option>
+              <option value="25" selected>25 miles</option>
+              <option value="50">50 miles</option>
+              <option value="100">100 miles</option>
+              <option value="150">150 miles</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="when">When</label>
+            <select id="when"></select>
+          </div>
+
+          <div class="field field-wide" id="customRange" hidden>
+            <label for="customStart">Custom dates</label>
+            <div class="input-row">
+              <input type="date" id="customStart" aria-label="Start date" />
+              <span class="dash">to</span>
+              <input type="date" id="customEnd" aria-label="End date" />
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="source">Listings from</label>
+            <select id="source"></select>
+            <p class="hint" id="sourceHint"></p>
+          </div>
+        </div>
+
+        <fieldset class="genres">
+          <legend>Genres</legend>
+          <div class="chip-row" id="genres"></div>
+        </fieldset>
+
+        <div class="actions">
+          <button type="button" class="btn btn-primary" id="find">Find shows</button>
+          <button type="button" class="btn btn-accent" id="auto" title="Near me, next 14 days, every genre, top 3 tracks each">
+            ⚡ Just do it for me
+          </button>
+        </div>
+      </section>
+
+      <section class="card watchlist" id="watchlistPanel" hidden>
+        <h2>Watchlist</h2>
+        <p class="hint">
+          Bandsintown answers "where is this artist playing?", so tell it who to watch. One artist
+          per line.
+        </p>
+        <textarea id="watchlist" rows="5" placeholder="Big Thief&#10;Khruangbin&#10;Jason Isbell"></textarea>
+        <div class="actions">
+          <button type="button" class="btn btn-ghost" id="importSpotify">
+            Import from my Spotify
+          </button>
+          <span class="hint" id="watchlistCount"></span>
+        </div>
+      </section>
+
+      <div class="status-area">
+        <p class="status" id="status" role="status" aria-live="polite"></p>
+        <div class="banner error" id="error" hidden>
+          <span id="errorText"></span>
+          <button type="button" class="icon-btn" id="errorClose" aria-label="Dismiss">×</button>
+        </div>
+      </div>
+
+      <div class="columns">
+        <section class="card panel" id="showsPanel" hidden aria-labelledby="shows-heading">
+          <div class="panel-head">
+            <h2 id="shows-heading">Shows <span class="count" id="showCount"></span></h2>
+            <div class="panel-tools">
+              <button type="button" class="btn btn-tiny" id="selectAll">All</button>
+              <button type="button" class="btn btn-tiny" id="selectNone">None</button>
+            </div>
+          </div>
+          <p class="hint" id="showsNote"></p>
+          <ol class="shows" id="showsList"></ol>
+        </section>
+
+        <section class="card panel" id="playlistPanel" hidden aria-labelledby="playlist-heading">
+          <div class="panel-head">
+            <h2 id="playlist-heading">Playlist <span class="count" id="trackCount"></span></h2>
+            <button type="button" class="btn btn-primary btn-small" id="build">Build playlist</button>
+          </div>
+          <p class="hint" id="playlistNote">
+            Top 3 tracks for each artist you've kept, in show order.
+          </p>
+          <ol class="tracks" id="trackList"></ol>
+          <div class="save-row" id="saveRow" hidden>
+            <button type="button" class="btn btn-spotify" id="saveSpotify">Save to Spotify</button>
+            <button type="button" class="btn btn-youtube" id="saveYouTube">Save to YouTube</button>
+            <button type="button" class="btn btn-ghost" id="copyList">Copy list</button>
+            <button type="button" class="btn btn-ghost" id="downloadJson">Download JSON</button>
+          </div>
+          <div class="links" id="playlistLinks"></div>
+        </section>
+      </div>
+
+      <section class="card empty" id="firstRun">
+        <h2>Two minutes of setup, then it's one click forever</h2>
+        <ol class="steps">
+          <li><strong>Try it with demo data</strong> — pick "Demo data" above and hit Find shows. No keys needed.</li>
+          <li><strong>Add a Ticketmaster key</strong> in Setup to scan real listings near you (free, instant).</li>
+          <li><strong>Connect Spotify</strong> to turn the lineup into a real playlist in your account.</li>
+        </ol>
+        <p class="hint">
+          Everything runs in your browser. Keys and tokens are stored in this browser's local
+          storage and are never sent anywhere but the service they belong to.
+        </p>
+      </section>
+    </main>
+
+    <footer>
+      <span>Showlist · static site, no backend</span>
+      <a href="https://github.com/jwildfire/showlist">Source on GitHub</a>
+    </footer>
+
+    <dialog id="setupDialog" class="setup">
+      <form method="dialog" class="setup-form">
+        <div class="setup-head">
+          <h2>Setup</h2>
+          <button type="submit" class="icon-btn" aria-label="Close">×</button>
+        </div>
+
+        <p class="hint">
+          This site has no server, so it uses <em>your</em> keys, kept in <em>your</em> browser.
+          Every field is optional — fill in the ones for the services you want.
+        </p>
+
+        <div class="setup-field">
+          <label for="tmKey">Ticketmaster API key</label>
+          <input type="text" id="tmKey" autocomplete="off" spellcheck="false" placeholder="Consumer key" />
+          <p class="hint">
+            Free in about two minutes at
+            <a href="https://developer-acct.ticketmaster.com/user/register" target="_blank" rel="noopener">
+              developer.ticketmaster.com</a
+            >. Use the app's <strong>Consumer Key</strong>.
+          </p>
+        </div>
+
+        <div class="setup-field">
+          <label for="bitAppId">Bandsintown app id</label>
+          <input type="text" id="bitAppId" autocomplete="off" spellcheck="false" placeholder="your-app-name" />
+          <p class="hint">
+            Request one at
+            <a href="https://artists.bandsintown.com/support/api-installation" target="_blank" rel="noopener"
+              >artists.bandsintown.com</a
+            >.
+          </p>
+        </div>
+
+        <div class="setup-field">
+          <label for="spotifyClientId">Spotify client ID</label>
+          <input type="text" id="spotifyClientId" autocomplete="off" spellcheck="false" placeholder="32-character client ID" />
+          <p class="hint">
+            Create an app at
+            <a href="https://developer.spotify.com/dashboard" target="_blank" rel="noopener"
+              >developer.spotify.com/dashboard</a
+            >, choose the <strong>Web API</strong>, and add the redirect URI below. No client secret
+            needed.
+          </p>
+        </div>
+
+        <div class="setup-field">
+          <label for="googleClientId">Google OAuth client ID (YouTube)</label>
+          <input type="text" id="googleClientId" autocomplete="off" spellcheck="false" placeholder="....apps.googleusercontent.com" />
+          <p class="hint">
+            In Google Cloud, enable the <strong>YouTube Data API v3</strong> and make a
+            <strong>Web application</strong> OAuth client with this page's origin as an authorized
+            JavaScript origin.
+          </p>
+        </div>
+
+        <div class="setup-field">
+          <label for="redirectUri">Redirect URI / JavaScript origin</label>
+          <div class="input-row">
+            <input type="text" id="redirectUri" readonly />
+            <button type="button" class="btn btn-ghost" id="copyRedirect">Copy</button>
+          </div>
+          <p class="hint">Paste this into Spotify's redirect URIs exactly as shown.</p>
+        </div>
+
+        <div class="setup-actions">
+          <button type="button" class="btn btn-spotify" id="connectSpotify">Connect Spotify</button>
+          <button type="button" class="btn btn-youtube" id="connectYouTube">Connect YouTube</button>
+        </div>
+
+        <div class="setup-foot">
+          <button type="button" class="btn btn-danger-ghost" id="clearData">
+            Forget everything on this device
+          </button>
+          <button type="button" class="btn btn-primary" id="saveSetup">Save</button>
+        </div>
+      </form>
+    </dialog>
+
+    <script type="module" src="js/app.js"></script>
+  </body>
+</html>
