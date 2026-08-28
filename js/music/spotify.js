@@ -248,15 +248,17 @@ export async function topTracks(artistId, market = 'US') {
  * popularity score, with the same song on three reissues collapsed to one.
  */
 export async function popularTracks(name, market = 'US', limit = 3) {
-  const q = encodeURIComponent(`artist:"${name}"`);
-  // 20 is Spotify's documented default and well inside every cap; a page of 20
-  // is ample to rank three popular tracks. Some apps reject 50 outright.
+  // Keep the request in the plainest shape Spotify accepts: a bare keyword
+  // query, no field filters, no quotes. The `artist:"…"` form and the market
+  // parameter both drew 400s from a real development-mode app, and the
+  // artist matching below doesn't need Spotify to do the filtering.
+  const q = encodeURIComponent(name);
   let body;
   try {
-    body = await api(`/search?q=${q}&type=track&limit=20&market=${market}`);
+    body = await api(`/search?q=${q}&type=track&limit=20`);
   } catch (err) {
-    if (!/invalid limit/i.test(err.message)) throw err;
-    body = await api(`/search?q=${q}&type=track&market=${market}`);
+    if (!/40[03]/.test(err.message)) throw err;
+    body = await api(`/search?q=${q}&type=track`); // last resort: defaults only
   }
   const target = normalizeName(name);
   const seen = new Set();
