@@ -1,0 +1,1040 @@
+{
+  "generatedAt": "2026-08-28T00:00:00Z",
+  "area": {
+    "label": "Durham, NC",
+    "lat": 36.0201,
+    "lon": -78.9403,
+    "postalCode": "27705",
+    "radiusMi": 60,
+    "countryCode": "US"
+  },
+  "coverage": "Venue calendars swept by web search — confirm dates with the venue before buying.",
+  "venueCount": 12,
+  "venues": [
+    {
+      "key": "cats-cradle",
+      "name": "Cat's Cradle",
+      "city": "Carrboro",
+      "url": "https://catscradle.com/events/",
+      "miles": 10.7
+    },
+    {
+      "key": "motorco",
+      "name": "Motorco Music Hall",
+      "city": "Durham",
+      "url": "https://motorcomusic.com/calendar/",
+      "miles": 2.7
+    },
+    {
+      "key": "pinhook",
+      "name": "The Pinhook",
+      "city": "Durham",
+      "url": "https://thepinhook.com/",
+      "miles": 2.8
+    },
+    {
+      "key": "dpac",
+      "name": "DPAC",
+      "city": "Durham",
+      "url": "https://www.dpacnc.com/events",
+      "miles": 2.6
+    },
+    {
+      "key": "ritz",
+      "name": "The Ritz",
+      "city": "Raleigh",
+      "url": "https://www.ritzraleigh.com/shows",
+      "miles": 23.2
+    },
+    {
+      "key": "red-hat",
+      "name": "Red Hat Amphitheater",
+      "city": "Raleigh",
+      "url": "https://www.redhatamphitheater.com/events",
+      "miles": 23.8
+    },
+    {
+      "key": "walnut-creek",
+      "name": "Coastal Credit Union Music Park at Walnut Creek",
+      "city": "Raleigh",
+      "url": "https://www.livenation.com/venue/KovZpZAE6eeA/coastal-credit-union-music-park-at-walnut-creek-events",
+      "miles": 29.0
+    },
+    {
+      "key": "lenovo",
+      "name": "Lenovo Center",
+      "city": "Raleigh",
+      "url": "https://www.lenovocenter.com/events",
+      "miles": 19.3
+    },
+    {
+      "key": "koka-booth",
+      "name": "Koka Booth Amphitheatre",
+      "city": "Cary",
+      "url": "https://www.boothamphitheatre.com/events/all",
+      "miles": 20.1
+    },
+    {
+      "key": "haw-river",
+      "name": "Haw River Ballroom",
+      "city": "Saxapahaw",
+      "url": "https://hawriverballroom.com/",
+      "miles": 21.9
+    },
+    {
+      "key": "hangar-1819",
+      "name": "Hangar 1819 (Blind Tiger)",
+      "city": "Greensboro",
+      "url": "https://www.hangar1819.com/",
+      "miles": 48.9
+    },
+    {
+      "key": "tanger",
+      "name": "Steven Tanger Center for the Performing Arts",
+      "city": "Greensboro",
+      "url": "https://www.greensboropac.com/events/",
+      "miles": 47.8
+    }
+  ],
+  "shows": [
+    {
+      "id": "motorco-2026-09-01-0",
+      "artists": [
+        "Meltt"
+      ],
+      "start": "2026-09-01T20:00:00-04:00",
+      "timeUnknown": false,
+      "genre": "alternative",
+      "venue": {
+        "name": "Motorco Music Hall",
+        "city": "Durham",
+        "state": "NC",
+        "lat": 36.0037,
+        "lon": -78.8968
+      },
+      "url": "https://motorcomusic.com/calendar/"
+    },
+    {
+      "id": "pinhook-2026-09-02-1",
+      "artists": [
+        "Big D and the Kids Table",
+        "Matamoska"
+      ],
+      "start": "2026-09-02T20:00:00-04:00",
+      "timeUnknown": true,
+      "genre": "metal",
+      "venue": {
+        "name": "The Pinhook",
+        "city": "Durham",
+        "state": "NC",
+        "lat": 35.995,
+        "lon": -78.9019
+      },
+      "url": "https://thepinhook.com/"
+    },
+    {
+      "id": "red-hat-2026-09-05-2",
+      "artists": [
+        "Grupo Frontera"
+      ],
+      "start": "2026-09-05T20:00:00-04:00",
+      "timeUnknown": false,
+      "genre": "latin",
+      "venue": {
+        "name": "Red Hat Amphitheater",
+        "city": "Raleigh",
+        "state": "NC",
+        "lat": 35.7737,
+        "lon": -78.642
+      },
+      "url": "https://www.redhatamphitheater.com/events"
+    },
+    {
+      "id": "walnut-creek-2026-09-06-3",
+      "artists": [
+        "Empire of the Sun"
+      ],
+      "start": "2026-09-06T20:00:00-04:00",
+      "timeUnknown": true,
+      "genre": "electronic",
+      "venue": {
+        "name": "Coastal Credit Union Music Park at Walnut Creek",
+        "city": "Raleigh",
+        "state": "NC",
+        "lat": 35.736,
+        "lon": -78.558
+      },
+      "url": "https://www.livenation.com/venue/KovZpZAE6eeA/coastal-credit-union-music-park-at-walnut-creek-events"
+    },
+    {
+      "id": "pinhook-2026-09-07-4",
+      "artists": [
+        "Spike Hellis",
+        "NUXX"
+      ],
+      "start": "2026-09-07T20:00:00-04:00",
+      "timeUnknown": true,
+      "genre": "electronic",
+      "venue": {
+        "name": "The Pinhook",
+        "city": "Durham",
+        "state": "NC",
+        "lat": 35.995,
+        "lon": -78.9019
+      },
+      "url": "https://thepinhook.com/"
+    },
+    {
+      "id": "walnut-creek-2026-09-09-5",
+      "artists": [
+        "Hayley Williams"
+      ],
+      "start": "2026-09-09T20:00:00-04:00",
+      "timeUnknown": true,
+      "genre": "alternative",
+      "venue": {
+        "name": "Coastal Credit Union Music Park at Walnut Creek",
+        "city": "Raleigh",
+        "state": "NC",
+        "lat": 35.736,
+        "lon": -78.558
+      },
+      "url": "https://www.livenation.com/venue/KovZpZAE6eeA/coastal-credit-union-music-park-at-walnut-creek-events"
+    },
+    {
+      "id": "pinhook-2026-09-10-6",
+      "artists": [
+        "Anna Graves"
+      ],
+      "start": "2026-09-10T20:00:00-04:00",
+      "timeUnknown": true,
+      "genre": "alternative",
+      "venue": {
+        "name": "The Pinhook",
+        "city": "Durham",
+        "state": "NC",
+        "lat": 35.995,
+        "lon": -78.9019
+      },
+      "url": "https://thepinhook.com/"
+    },
+    {
+      "id": "red-hat-2026-09-11-7",
+      "artists": [
+        "Marcus King Band"
+      ],
+      "start": "2026-09-11T20:00:00-04:00",
+      "timeUnknown": true,
+      "genre": "blues",
+      "venue": {
+        "name": "Red Hat Amphitheater",
+        "city": "Raleigh",
+        "state": "NC",
+        "lat": 35.7737,
+        "lon": -78.642
+      },
+      "url": "https://www.redhatamphitheater.com/events"
+    },
+    {
+      "id": "walnut-creek-2026-09-11-8",
+      "artists": [
+        "Staind",
+        "Seether",
+        "Hoobastank",
+        "Hinder"
+      ],
+      "start": "2026-09-11T20:00:00-04:00",
+      "timeUnknown": true,
+      "genre": "rock",
+      "venue": {
+        "name": "Coastal Credit Union Music Park at Walnut Creek",
+        "city": "Raleigh",
+        "state": "NC",
+        "lat": 35.736,
+        "lon": -78.558
+      },
+      "url": "https://www.livenation.com/venue/KovZpZAE6eeA/coastal-credit-union-music-park-at-walnut-creek-events"
+    },
+    {
+      "id": "motorco-2026-09-13-9",
+      "artists": [
+        "Wind Walkers"
+      ],
+      "start": "2026-09-13T19:30:00-04:00",
+      "timeUnknown": false,
+      "genre": "metal",
+      "venue": {
+        "name": "Motorco Music Hall",
+        "city": "Durham",
+        "state": "NC",
+        "lat": 36.0037,
+        "lon": -78.8968
+      },
+      "url": "https://motorcomusic.com/calendar/"
+    },
+    {
+      "id": "walnut-creek-2026-09-13-10",
+      "artists": [
+        "BABYMETAL",
+        "Halestorm",
+        "Violent Vira"
+      ],
+      "start": "2026-09-13T20:00:00-04:00",
+      "timeUnknown": true,
+      "genre": "metal",
+      "venue": {
+        "name": "Coastal Credit Union Music Park at Walnut Creek",
+        "city": "Raleigh",
+        "state": "NC",
+        "lat": 35.736,
+        "lon": -78.558
+      },
+      "url": "https://www.livenation.com/venue/KovZpZAE6eeA/coastal-credit-union-music-park-at-walnut-creek-events"
+    },
+    {
+      "id": "hangar-1819-2026-09-14-11",
+      "artists": [
+        "Danny Worsnop",
+        "Tyler Rich"
+      ],
+      "start": "2026-09-14T19:15:00-04:00",
+      "timeUnknown": false,
+      "genre": "rock",
+      "venue": {
+        "name": "Hangar 1819 (Blind Tiger)",
+        "city": "Greensboro",
+        "state": "NC",
+        "lat": 36.064,
+        "lon": -79.814
+      },
+      "url": "https://www.hangar1819.com/"
+    },
+    {
+      "id": "motorco-2026-09-15-12",
+      "artists": [
+        "156/Silence"
+      ],
+      "start": "2026-09-15T19:59:00-04:00",
+      "timeUnknown": false,
+      "genre": "metal",
+      "venue": {
+        "name": "Motorco Music Hall",
+        "city": "Durham",
+        "state": "NC",
+        "lat": 36.0037,
+        "lon": -78.8968
+      },
+      "url": "https://motorcomusic.com/calendar/"
+    },
+    {
+      "id": "ritz-2026-09-15-13",
+      "artists": [
+        "Black Label Society"
+      ],
+      "start": "2026-09-15T18:30:00-04:00",
+      "timeUnknown": false,
+      "genre": "metal",
+      "venue": {
+        "name": "The Ritz",
+        "city": "Raleigh",
+        "state": "NC",
+        "lat": 35.818,
+        "lon": -78.61
+      },
+      "url": "https://www.ritzraleigh.com/shows"
+    },
+    {
+      "id": "cats-cradle-2026-09-17-14",
+      "artists": [
+        "Municipal Waste",
+        "Negative Approach"
+      ],
+      "start": "2026-09-17T20:00:00-04:00",
+      "timeUnknown": true,
+      "genre": "metal",
+      "venue": {
+        "name": "Cat's Cradle",
+        "city": "Carrboro",
+        "state": "NC",
+        "lat": 35.9101,
+        "lon": -79.0753
+      },
+      "url": "https://catscradle.com/events/"
+    },
+    {
+      "id": "cats-cradle-2026-09-18-15",
+      "artists": [
+        "Softcult",
+        "Shady Nasty",
+        "Dazy"
+      ],
+      "start": "2026-09-18T20:00:00-04:00",
+      "timeUnknown": true,
+      "genre": "alternative",
+      "venue": {
+        "name": "Cat's Cradle",
+        "city": "Carrboro",
+        "state": "NC",
+        "lat": 35.9101,
+        "lon": -79.0753
+      },
+      "url": "https://catscradle.com/events/"
+    },
+    {
+      "id": "red-hat-2026-09-19-16",
+      "artists": [
+        "Young Thug",
+        "NAV"
+      ],
+      "start": "2026-09-19T19:30:00-04:00",
+      "timeUnknown": false,
+      "genre": "hiphop",
+      "venue": {
+        "name": "Red Hat Amphitheater",
+        "city": "Raleigh",
+        "state": "NC",
+        "lat": 35.7737,
+        "lon": -78.642
+      },
+      "url": "https://www.redhatamphitheater.com/events"
+    },
+    {
+      "id": "walnut-creek-2026-09-19-17",
+      "artists": [
+        "TLC",
+        "Salt-N-Pepa",
+        "En Vogue"
+      ],
+      "start": "2026-09-19T20:00:00-04:00",
+      "timeUnknown": true,
+      "genre": "rnb",
+      "venue": {
+        "name": "Coastal Credit Union Music Park at Walnut Creek",
+        "city": "Raleigh",
+        "state": "NC",
+        "lat": 35.736,
+        "lon": -78.558
+      },
+      "url": "https://www.livenation.com/venue/KovZpZAE6eeA/coastal-credit-union-music-park-at-walnut-creek-events"
+    },
+    {
+      "id": "lenovo-2026-09-19-18",
+      "artists": [
+        "Master P",
+        "Birdman",
+        "Juvenile",
+        "Mannie Fresh",
+        "Silkk the Shocker",
+        "Mia X"
+      ],
+      "start": "2026-09-19T20:00:00-04:00",
+      "timeUnknown": true,
+      "genre": "hiphop",
+      "venue": {
+        "name": "Lenovo Center",
+        "city": "Raleigh",
+        "state": "NC",
+        "lat": 35.8033,
+        "lon": -78.7217
+      },
+      "url": "https://www.lenovocenter.com/events"
+    },
+    {
+      "id": "cats-cradle-2026-09-19-19",
+      "artists": [
+        "Paper Wings"
+      ],
+      "start": "2026-09-19T20:00:00-04:00",
+      "timeUnknown": true,
+      "genre": "alternative",
+      "venue": {
+        "name": "Cat's Cradle",
+        "city": "Carrboro",
+        "state": "NC",
+        "lat": 35.9101,
+        "lon": -79.0753
+      },
+      "url": "https://catscradle.com/events/"
+    },
+    {
+      "id": "koka-booth-2026-09-20-20",
+      "artists": [
+        "Rainbow Kitten Surprise"
+      ],
+      "start": "2026-09-20T20:00:00-04:00",
+      "timeUnknown": true,
+      "genre": "alternative",
+      "venue": {
+        "name": "Koka Booth Amphitheatre",
+        "city": "Cary",
+        "state": "NC",
+        "lat": 35.758,
+        "lon": -78.783
+      },
+      "url": "https://www.boothamphitheatre.com/events/all"
+    },
+    {
+      "id": "ritz-2026-09-25-21",
+      "artists": [
+        "W.A.S.P.",
+        "KK's Priest"
+      ],
+      "start": "2026-09-25T20:00:00-04:00",
+      "timeUnknown": true,
+      "genre": "metal",
+      "venue": {
+        "name": "The Ritz",
+        "city": "Raleigh",
+        "state": "NC",
+        "lat": 35.818,
+        "lon": -78.61
+      },
+      "url": "https://www.ritzraleigh.com/shows"
+    },
+    {
+      "id": "motorco-2026-09-26-22",
+      "artists": [
+        "Emerson Bruno",
+        "Cherry Motel"
+      ],
+      "start": "2026-09-26T20:00:00-04:00",
+      "timeUnknown": true,
+      "genre": "alternative",
+      "venue": {
+        "name": "Motorco Music Hall",
+        "city": "Durham",
+        "state": "NC",
+        "lat": 36.0037,
+        "lon": -78.8968
+      },
+      "url": "https://motorcomusic.com/calendar/"
+    },
+    {
+      "id": "walnut-creek-2026-09-26-23",
+      "artists": [
+        "Lil Wayne",
+        "2 Chainz"
+      ],
+      "start": "2026-09-26T20:00:00-04:00",
+      "timeUnknown": true,
+      "genre": "hiphop",
+      "venue": {
+        "name": "Coastal Credit Union Music Park at Walnut Creek",
+        "city": "Raleigh",
+        "state": "NC",
+        "lat": 35.736,
+        "lon": -78.558
+      },
+      "url": "https://www.livenation.com/venue/KovZpZAE6eeA/coastal-credit-union-music-park-at-walnut-creek-events"
+    },
+    {
+      "id": "red-hat-2026-09-27-24",
+      "artists": [
+        "Rise Against"
+      ],
+      "start": "2026-09-27T18:30:00-04:00",
+      "timeUnknown": false,
+      "genre": "metal",
+      "venue": {
+        "name": "Red Hat Amphitheater",
+        "city": "Raleigh",
+        "state": "NC",
+        "lat": 35.7737,
+        "lon": -78.642
+      },
+      "url": "https://www.redhatamphitheater.com/events"
+    },
+    {
+      "id": "ritz-2026-09-27-25",
+      "artists": [
+        "Suki Waterhouse"
+      ],
+      "start": "2026-09-27T20:00:00-04:00",
+      "timeUnknown": true,
+      "genre": "pop",
+      "venue": {
+        "name": "The Ritz",
+        "city": "Raleigh",
+        "state": "NC",
+        "lat": 35.818,
+        "lon": -78.61
+      },
+      "url": "https://www.ritzraleigh.com/shows"
+    },
+    {
+      "id": "motorco-2026-09-27-26",
+      "artists": [
+        "Pretoria",
+        "Capital Soiree"
+      ],
+      "start": "2026-09-27T20:00:00-04:00",
+      "timeUnknown": true,
+      "genre": "alternative",
+      "venue": {
+        "name": "Motorco Music Hall",
+        "city": "Durham",
+        "state": "NC",
+        "lat": 36.0037,
+        "lon": -78.8968
+      },
+      "url": "https://motorcomusic.com/calendar/"
+    },
+    {
+      "id": "motorco-2026-09-28-27",
+      "artists": [
+        "Slothrust"
+      ],
+      "start": "2026-09-28T20:00:00-04:00",
+      "timeUnknown": false,
+      "genre": "alternative",
+      "venue": {
+        "name": "Motorco Music Hall",
+        "city": "Durham",
+        "state": "NC",
+        "lat": 36.0037,
+        "lon": -78.8968
+      },
+      "url": "https://motorcomusic.com/calendar/"
+    },
+    {
+      "id": "red-hat-2026-09-29-28",
+      "artists": [
+        "Turnstile"
+      ],
+      "start": "2026-09-29T18:00:00-04:00",
+      "timeUnknown": false,
+      "genre": "metal",
+      "venue": {
+        "name": "Red Hat Amphitheater",
+        "city": "Raleigh",
+        "state": "NC",
+        "lat": 35.7737,
+        "lon": -78.642
+      },
+      "url": "https://www.redhatamphitheater.com/events"
+    },
+    {
+      "id": "cats-cradle-2026-10-01-29",
+      "artists": [
+        "The Get Up Kids"
+      ],
+      "start": "2026-10-01T19:30:00-04:00",
+      "timeUnknown": false,
+      "genre": "alternative",
+      "venue": {
+        "name": "Cat's Cradle",
+        "city": "Carrboro",
+        "state": "NC",
+        "lat": 35.9101,
+        "lon": -79.0753
+      },
+      "url": "https://catscradle.com/events/"
+    },
+    {
+      "id": "red-hat-2026-10-01-30",
+      "artists": [
+        "Dylan Gossett",
+        "Charles Wesley Godwin"
+      ],
+      "start": "2026-10-01T19:00:00-04:00",
+      "timeUnknown": false,
+      "genre": "country",
+      "venue": {
+        "name": "Red Hat Amphitheater",
+        "city": "Raleigh",
+        "state": "NC",
+        "lat": 35.7737,
+        "lon": -78.642
+      },
+      "url": "https://www.redhatamphitheater.com/events"
+    },
+    {
+      "id": "tanger-2026-10-01-31",
+      "artists": [
+        "Zach Williams",
+        "Cochren & Co"
+      ],
+      "start": "2026-10-01T19:00:00-04:00",
+      "timeUnknown": false,
+      "genre": "rock",
+      "venue": {
+        "name": "Steven Tanger Center for the Performing Arts",
+        "city": "Greensboro",
+        "state": "NC",
+        "lat": 36.07,
+        "lon": -79.793
+      },
+      "url": "https://www.greensboropac.com/events/"
+    },
+    {
+      "id": "ritz-2026-10-02-32",
+      "artists": [
+        "The Midnight"
+      ],
+      "start": "2026-10-02T20:00:00-04:00",
+      "timeUnknown": true,
+      "genre": "electronic",
+      "venue": {
+        "name": "The Ritz",
+        "city": "Raleigh",
+        "state": "NC",
+        "lat": 35.818,
+        "lon": -78.61
+      },
+      "url": "https://www.ritzraleigh.com/shows"
+    },
+    {
+      "id": "red-hat-2026-10-04-33",
+      "artists": [
+        "Dermot Kennedy"
+      ],
+      "start": "2026-10-04T20:00:00-04:00",
+      "timeUnknown": false,
+      "genre": "pop",
+      "venue": {
+        "name": "Red Hat Amphitheater",
+        "city": "Raleigh",
+        "state": "NC",
+        "lat": 35.7737,
+        "lon": -78.642
+      },
+      "url": "https://www.redhatamphitheater.com/events"
+    },
+    {
+      "id": "lenovo-2026-10-04-34",
+      "artists": [
+        "Weezer",
+        "The Shins",
+        "Silversun Pickups"
+      ],
+      "start": "2026-10-04T20:00:00-04:00",
+      "timeUnknown": true,
+      "genre": "rock",
+      "venue": {
+        "name": "Lenovo Center",
+        "city": "Raleigh",
+        "state": "NC",
+        "lat": 35.8033,
+        "lon": -78.7217
+      },
+      "url": "https://www.lenovocenter.com/events"
+    },
+    {
+      "id": "tanger-2026-10-04-35",
+      "artists": [
+        "Black Violin"
+      ],
+      "start": "2026-10-04T19:00:00-04:00",
+      "timeUnknown": false,
+      "genre": "classical",
+      "venue": {
+        "name": "Steven Tanger Center for the Performing Arts",
+        "city": "Greensboro",
+        "state": "NC",
+        "lat": 36.07,
+        "lon": -79.793
+      },
+      "url": "https://www.greensboropac.com/events/"
+    },
+    {
+      "id": "cats-cradle-2026-10-05-36",
+      "artists": [
+        "Black Country, New Road"
+      ],
+      "start": "2026-10-05T20:00:00-04:00",
+      "timeUnknown": false,
+      "genre": "alternative",
+      "venue": {
+        "name": "Cat's Cradle",
+        "city": "Carrboro",
+        "state": "NC",
+        "lat": 35.9101,
+        "lon": -79.0753
+      },
+      "url": "https://catscradle.com/events/"
+    },
+    {
+      "id": "dpac-2026-10-06-37",
+      "artists": [
+        "Tom Jones"
+      ],
+      "start": "2026-10-06T20:00:00-04:00",
+      "timeUnknown": true,
+      "genre": "pop",
+      "venue": {
+        "name": "DPAC",
+        "city": "Durham",
+        "state": "NC",
+        "lat": 35.9958,
+        "lon": -78.9052
+      },
+      "url": "https://www.dpacnc.com/events"
+    },
+    {
+      "id": "cats-cradle-2026-10-07-38",
+      "artists": [
+        "Russian Circles",
+        "Pelican"
+      ],
+      "start": "2026-10-07T20:00:00-04:00",
+      "timeUnknown": false,
+      "genre": "metal",
+      "venue": {
+        "name": "Cat's Cradle",
+        "city": "Carrboro",
+        "state": "NC",
+        "lat": 35.9101,
+        "lon": -79.0753
+      },
+      "url": "https://catscradle.com/events/"
+    },
+    {
+      "id": "dpac-2026-10-08-39",
+      "artists": [
+        "Sylvan Esso",
+        "Meshell Ndegeocello"
+      ],
+      "start": "2026-10-08T20:00:00-04:00",
+      "timeUnknown": true,
+      "genre": "alternative",
+      "venue": {
+        "name": "DPAC",
+        "city": "Durham",
+        "state": "NC",
+        "lat": 35.9958,
+        "lon": -78.9052
+      },
+      "url": "https://www.dpacnc.com/events"
+    },
+    {
+      "id": "dpac-2026-10-09-40",
+      "artists": [
+        "Tyler Childers",
+        "Aja Monet"
+      ],
+      "start": "2026-10-09T20:00:00-04:00",
+      "timeUnknown": true,
+      "genre": "country",
+      "venue": {
+        "name": "DPAC",
+        "city": "Durham",
+        "state": "NC",
+        "lat": 35.9958,
+        "lon": -78.9052
+      },
+      "url": "https://www.dpacnc.com/events"
+    },
+    {
+      "id": "cats-cradle-2026-10-10-41",
+      "artists": [
+        "Brian Fallon & The Painkillers",
+        "Tim Barry"
+      ],
+      "start": "2026-10-10T19:00:00-04:00",
+      "timeUnknown": false,
+      "genre": "rock",
+      "venue": {
+        "name": "Cat's Cradle",
+        "city": "Carrboro",
+        "state": "NC",
+        "lat": 35.9101,
+        "lon": -79.0753
+      },
+      "url": "https://catscradle.com/events/"
+    },
+    {
+      "id": "dpac-2026-10-10-42",
+      "artists": [
+        "Sylvan Esso",
+        "Silvana Estrada"
+      ],
+      "start": "2026-10-10T20:00:00-04:00",
+      "timeUnknown": true,
+      "genre": "alternative",
+      "venue": {
+        "name": "DPAC",
+        "city": "Durham",
+        "state": "NC",
+        "lat": 35.9958,
+        "lon": -78.9052
+      },
+      "url": "https://www.dpacnc.com/events"
+    },
+    {
+      "id": "red-hat-2026-10-10-43",
+      "artists": [
+        "Turnpike Troubadours"
+      ],
+      "start": "2026-10-10T20:00:00-04:00",
+      "timeUnknown": true,
+      "genre": "country",
+      "venue": {
+        "name": "Red Hat Amphitheater",
+        "city": "Raleigh",
+        "state": "NC",
+        "lat": 35.7737,
+        "lon": -78.642
+      },
+      "url": "https://www.redhatamphitheater.com/events"
+    },
+    {
+      "id": "lenovo-2026-10-11-44",
+      "artists": [
+        "Beabadoobee",
+        "Wisp"
+      ],
+      "start": "2026-10-11T20:00:00-04:00",
+      "timeUnknown": true,
+      "genre": "alternative",
+      "venue": {
+        "name": "Lenovo Center",
+        "city": "Raleigh",
+        "state": "NC",
+        "lat": 35.8033,
+        "lon": -78.7217
+      },
+      "url": "https://www.lenovocenter.com/events"
+    },
+    {
+      "id": "haw-river-2026-10-15-45",
+      "artists": [
+        "The Tallest Man on Earth"
+      ],
+      "start": "2026-10-15T20:00:00-04:00",
+      "timeUnknown": false,
+      "genre": "folk",
+      "venue": {
+        "name": "Haw River Ballroom",
+        "city": "Saxapahaw",
+        "state": "NC",
+        "lat": 35.943,
+        "lon": -79.32
+      },
+      "url": "https://hawriverballroom.com/"
+    },
+    {
+      "id": "koka-booth-2026-10-15-46",
+      "artists": [
+        "Ty Myers",
+        "Brent Cobb",
+        "Benny G"
+      ],
+      "start": "2026-10-15T20:00:00-04:00",
+      "timeUnknown": true,
+      "genre": "country",
+      "venue": {
+        "name": "Koka Booth Amphitheatre",
+        "city": "Cary",
+        "state": "NC",
+        "lat": 35.758,
+        "lon": -78.783
+      },
+      "url": "https://www.boothamphitheatre.com/events/all"
+    },
+    {
+      "id": "cats-cradle-2026-10-18-47",
+      "artists": [
+        "Benjamin Tod"
+      ],
+      "start": "2026-10-18T20:00:00-04:00",
+      "timeUnknown": true,
+      "genre": "folk",
+      "venue": {
+        "name": "Cat's Cradle",
+        "city": "Carrboro",
+        "state": "NC",
+        "lat": 35.9101,
+        "lon": -79.0753
+      },
+      "url": "https://catscradle.com/events/"
+    },
+    {
+      "id": "koka-booth-2026-10-18-48",
+      "artists": [
+        "Trampled by Turtles"
+      ],
+      "start": "2026-10-18T20:00:00-04:00",
+      "timeUnknown": true,
+      "genre": "folk",
+      "venue": {
+        "name": "Koka Booth Amphitheatre",
+        "city": "Cary",
+        "state": "NC",
+        "lat": 35.758,
+        "lon": -78.783
+      },
+      "url": "https://www.boothamphitheatre.com/events/all"
+    },
+    {
+      "id": "lenovo-2026-10-21-49",
+      "artists": [
+        "Johnny Blue Skies"
+      ],
+      "start": "2026-10-21T20:00:00-04:00",
+      "timeUnknown": true,
+      "genre": "country",
+      "venue": {
+        "name": "Lenovo Center",
+        "city": "Raleigh",
+        "state": "NC",
+        "lat": 35.8033,
+        "lon": -78.7217
+      },
+      "url": "https://www.lenovocenter.com/events"
+    },
+    {
+      "id": "ritz-2026-10-22-50",
+      "artists": [
+        "Arch Enemy",
+        "The Black Dahlia Murder"
+      ],
+      "start": "2026-10-22T20:00:00-04:00",
+      "timeUnknown": true,
+      "genre": "metal",
+      "venue": {
+        "name": "The Ritz",
+        "city": "Raleigh",
+        "state": "NC",
+        "lat": 35.818,
+        "lon": -78.61
+      },
+      "url": "https://www.ritzraleigh.com/shows"
+    },
+    {
+      "id": "red-hat-2026-10-23-51",
+      "artists": [
+        "Steve Lacy"
+      ],
+      "start": "2026-10-23T20:00:00-04:00",
+      "timeUnknown": false,
+      "genre": "rnb",
+      "venue": {
+        "name": "Red Hat Amphitheater",
+        "city": "Raleigh",
+        "state": "NC",
+        "lat": 35.7737,
+        "lon": -78.642
+      },
+      "url": "https://www.redhatamphitheater.com/events"
+    },
+    {
+      "id": "koka-booth-2026-10-24-52",
+      "artists": [
+        "Gavin Adcock",
+        "Pecos & The Rooftops",
+        "Tyler Nance"
+      ],
+      "start": "2026-10-24T20:00:00-04:00",
+      "timeUnknown": true,
+      "genre": "country",
+      "venue": {
+        "name": "Koka Booth Amphitheatre",
+        "city": "Cary",
+        "state": "NC",
+        "lat": 35.758,
+        "lon": -78.783
+      },
+      "url": "https://www.boothamphitheatre.com/events/all"
+    }
+  ]
+}

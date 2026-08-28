@@ -91,6 +91,21 @@ async function main() {
   await page.goto(base);
   const steps = [];
 
+  // 0. The default path: preloaded listings, no keys, no settings touched.
+  assert((await page.inputValue('#source')) === 'local', 'preloaded listings should be the default');
+  await page.waitForFunction(() =>
+    [...document.getElementById('source').options].some((o) => /preloaded/.test(o.textContent))
+  );
+  const sourceLabel = await page.locator('#source option[value=local]').textContent();
+  assert(/Durham, NC \(preloaded\)/.test(sourceLabel), `source option reads "${sourceLabel}"`);
+  await page.click('#find');
+  await page.waitForSelector('.show');
+  const preloaded = await page.locator('.show').count();
+  assert(preloaded > 3, `expected preloaded shows in the default window, saw ${preloaded}`);
+  const note = await page.locator('#showsNote').textContent();
+  assert(/swept/i.test(note), `expected a sweep-date note, got "${note}"`);
+  steps.push(`preloaded path returned ${preloaded} real shows with no keys`);
+
   // 1. Demo scan.
   await page.selectOption('#source', 'demo');
   await page.selectOption('#when', '30');

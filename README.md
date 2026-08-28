@@ -14,16 +14,29 @@ your browser, and your keys and tokens never leave it.
 
 ---
 
+## Two paths
+
+**1. Preloaded — nothing to set up.** `data/shows.json` ships with the site: a
+list of real upcoming shows for one metro area (currently **Durham, NC and
+everything within 60 miles** — Raleigh, Chapel Hill, Carrboro, Cary,
+Saxapahaw, Greensboro), refreshed by a [weekly sweep](sweep/README.md) of
+public venue calendars. Open the site, hit **Find shows**, done. No key, no
+rate limit.
+
+**2. Anywhere else — bring a Ticketmaster key.** Free, about two minutes (see
+below). Then any city or ZIP, any radius, live listings.
+
+Either way, connect Spotify to turn a lineup into a playlist. And there's one
+button that does the whole thing: **⚡ Just do it for me** — next 14 days,
+every genre, top 3 tracks per artist, playlist built and waiting to be saved.
+
 ## Quick start
 
-1. **Look around with demo data.** Open the site, set *Listings from* to
-   **Demo data**, hit **Find shows**. No keys, no sign-in.
-2. **Add a Ticketmaster key** (2 minutes, free) to scan real listings near you.
-3. **Connect Spotify** to turn a lineup into a real playlist.
-
-Then it's one button: **⚡ Just do it for me** — your location, the next 14
-days, every genre, top 3 tracks per artist, playlist built and waiting to be
-saved.
+1. **Open it and press Find shows.** The preloaded Triangle listings answer
+   immediately.
+2. **Connect Spotify** in Setup, press **Build playlist**, then **Save to
+   Spotify**.
+3. Only if you want another metro area: add a **Ticketmaster key** in Setup.
 
 ## What you need, and why
 
@@ -73,7 +86,14 @@ day. Showlist tells you the estimated cost before spending it.
 Request one at
 [artists.bandsintown.com](https://artists.bandsintown.com/support/api-installation).
 
-## The two listing sources
+## The listing sources
+
+| | Preloaded sweep |
+| --- | --- |
+| **Question it answers** | "What's playing near Durham in the next couple of months?" |
+| **How Showlist uses it** | Reads `data/shows.json`, filters by your radius, dates and genres |
+| **Needs** | Nothing |
+| **Freshness** | Refreshed weekly; the app shows the sweep date |
 
 |                    | Ticketmaster                                        | Bandsintown                                                    |
 | ------------------ | --------------------------------------------------- | -------------------------------------------------------------- |
@@ -91,8 +111,9 @@ followed artists.
 ```
 location + radius + dates + genres
         │
-        ├─ Ticketmaster events search  ─┐
-        └─ Bandsintown per-artist dates ┤
+        ├─ data/shows.json (preloaded)  ─┐
+        ├─ Ticketmaster events search    │
+        └─ Bandsintown per-artist dates ─┤
                                         ▼
                               shows (you can uncheck any)
                                         ▼
@@ -130,6 +151,7 @@ Tests:
 
 ```bash
 node --test tests/unit.test.mjs   # pure logic: dates, geo, genres, playlist assembly
+node sweep/validate.mjs           # checks data/shows.json before it ships
 node tests/smoke.cjs              # browser walkthrough (needs: npm i -g playwright)
 ```
 
@@ -148,7 +170,9 @@ js/geo.js             geolocation, geocoding, distance, geohash
 js/dates.js           date-range presets and per-API date formats
 js/genres.js          one genre vocabulary, mapped per source
 js/playlist.js        shows → artists → ordered tracklist
-js/sources/*.js       ticketmaster, bandsintown, demo
+js/sources/*.js       local (the preloaded sweep), ticketmaster, bandsintown, demo
+data/shows.json       the swept listings, and the area + venues they cover
+sweep/                the weekly refresh spec and its validator
 js/music/*.js         spotify (PKCE), youtube (Google Identity Services)
 ```
 
@@ -156,6 +180,13 @@ Adding a service means writing one module with `resolveTracks` and
 `createPlaylist`; adding a listing source means one module exporting `meta` and
 `findShows` that returns shows in the shared shape. Both are registered in one
 line in `js/app.js`.
+
+## Sweeping a different area
+
+Nothing about the city is hard-coded. Edit `area` (label, lat/lon, radius) and
+the `venues` list in `data/shows.json`, then run the sweep again — see
+[sweep/README.md](sweep/README.md). The source dropdown names itself after
+whatever `area.label` says.
 
 ## Deploying your own copy
 

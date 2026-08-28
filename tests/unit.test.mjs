@@ -143,3 +143,14 @@ test('buildTracklist flattens per-artist results and reports misses', () => {
   assert.deepEqual(missing, [{ name: 'Nobody', reason: 'not on Spotify' }]);
   assert.match(toText(tracks), /Big Thief — Vampire Empire — .* at Venue a/);
 });
+
+test('wallClock reads the time as written, whatever the viewer timezone', async () => {
+  const { wallClock } = await import('../js/dates.js');
+  const show = wallClock('2026-09-01T20:00:00-04:00');
+  assert.equal(show.getHours(), 20, '8pm in Durham reads as 8pm anywhere');
+  assert.equal(toISODate(show), '2026-09-01');
+
+  // A date with no time falls back to a plausible door time.
+  assert.equal(wallClock('2026-10-05').getHours(), 20);
+  assert.equal(wallClock('nonsense'), null);
+});

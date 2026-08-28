@@ -58,6 +58,18 @@ export function toBandsintownRange(start, end) {
   return `${toISODate(start)},${toISODate(end)}`;
 }
 
+/**
+ * The wall-clock time as written, ignoring any UTC offset — a show at 8pm in
+ * Durham should read "8pm" whether you're in Durham or Lisbon. Returns a Date
+ * whose *local* fields are the ones in the string.
+ */
+export function wallClock(value) {
+  const match = String(value).match(/^(\d{4})-(\d{2})-(\d{2})(?:[T ](\d{2}):(\d{2}))?/);
+  if (!match) return null;
+  const [, y, m, d, hh = '20', mm = '00'] = match;
+  return new Date(Number(y), Number(m) - 1, Number(d), Number(hh), Number(mm), 0, 0);
+}
+
 export function toISODate(date) {
   const pad = (n) => String(n).padStart(2, '0');
   return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;

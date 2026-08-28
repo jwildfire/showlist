@@ -3,9 +3,9 @@
 const KEY = 'showlist:v1';
 
 export const DEFAULT_CONTROLS = {
-  source: 'ticketmaster',
+  source: 'local',
   location: '',
-  radius: 25,
+  radius: 60,
   range: '14',
   customStart: '',
   customEnd: '',

@@ -3,6 +3,7 @@
 import * as store from './state.js';
 import * as spotify from './music/spotify.js';
 import * as youtube from './music/youtube.js';
+import * as local from './sources/local.js';
 import * as ticketmaster from './sources/ticketmaster.js';
 import * as bandsintown from './sources/bandsintown.js';
 import * as demo from './sources/demo.js';
@@ -19,7 +20,7 @@ import {
 } from './playlist.js';
 import { renderGenreChips, renderLinks, renderShows, renderTracks } from './ui.js';
 
-const SOURCES = { ticketmaster, bandsintown, demo };
+const SOURCES = { local, ticketmaster, bandsintown, demo };
 const el = (id) => document.getElementById(id);
 
 /** Everything about the current search that isn't persisted. */
@@ -56,6 +57,18 @@ function buildStaticControls() {
   el('source').replaceChildren(
     ...Object.values(SOURCES).map((source) => new Option(source.meta.label, source.meta.id))
   );
+  labelPreloadedSource();
+}
+
+/** The preloaded option is named after whatever metro the data file covers. */
+async function labelPreloadedSource() {
+  try {
+    const area = await local.area();
+    const option = [...el('source').options].find((o) => o.value === 'local');
+    if (option && area?.label) option.textContent = `${area.label} (preloaded)`;
+  } catch {
+    /* no data file yet — the generic label is fine */
+  }
 }
 
 function restoreControls() {
@@ -226,12 +239,19 @@ async function currentPlace() {
 
 /** Demo mode shouldn't demand a location — it invents one if you haven't picked. */
 async function placeForSearch(source) {
-  if (source !== 'demo') return currentPlace();
+  const needsLocation = source === 'ticketmaster' || source === 'bandsintown';
+  if (needsLocation) return currentPlace();
   try {
     return await currentPlace();
   } catch {
-    const fallback = { label: 'Austin, TX', lat: 30.2672, lon: -97.7431, countryCode: 'US' };
-    el('placeHint').textContent = 'Demo data centred on Austin, TX — set a location for real listings.';
+    const fallback =
+      source === 'local'
+        ? await local.area()
+        : { label: 'Austin, TX', lat: 30.2672, lon: -97.7431, countryCode: 'US' };
+    el('placeHint').textContent =
+      source === 'local'
+        ? `Centred on ${fallback.label} — the area these listings cover.`
+        : 'Demo data centred on Austin, TX — set a location for real listings.';
     return fallback;
   }
 }
@@ -280,6 +300,11 @@ async function runFind() {
   drawShows();
 
   const notes = [];
+  if (result.generatedAt) {
+    const swept = new Date(result.generatedAt);
+    notes.push(`Listings swept ${swept.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}.`);
+  }
+  if (result.coverage) notes.push(result.coverage);
   if (result.truncated) notes.push(`Showing the first ${view.shows.length} of ${result.total}.`);
   if (result.misses?.length)
     notes.push(`No dates near you for: ${result.misses.slice(0, 8).join(', ')}${result.misses.length > 8 ? '…' : ''}`);
@@ -488,13 +513,15 @@ function downloadJson() {
 /* ---------- the one-click path ---------- */
 
 async function runAuto() {
+  const controls = store.getControls();
   const credentials = store.getCredentials();
-  const source = credentials.ticketmasterKey ? 'ticketmaster' : 'demo';
-  store.setControls({ source, range: '14', radius: 25, genres: [] });
+  // Preloaded listings need nothing; a key unlocks anywhere else.
+  const source = controls.source === 'local' || !credentials.ticketmasterKey ? 'local' : 'ticketmaster';
+  store.setControls({ source, range: '14', radius: source === 'local' ? 60 : 25, genres: [] });
   restoreControls();
   syncSourcePanels();
 
-  if (!store.getPlace() && !el('location').value.trim()) {
+  if (source !== 'local' && !store.getPlace() && !el('location').value.trim()) {
     try {
       await useMyLocation();
     } catch (err) {

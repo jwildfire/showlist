@@ -2,7 +2,7 @@
 // Docs: https://developer.ticketmaster.com/products-and-docs/apis/discovery-api/v2/
 
 import { geohash } from '../geo.js';
-import { toTicketmasterStamp } from '../dates.js';
+import { toTicketmasterStamp, wallClock } from '../dates.js';
 import { ticketmasterNames, normalizeGenre } from '../genres.js';
 
 const ENDPOINT = 'https://app.ticketmaster.com/discovery/v2/events.json';
@@ -99,11 +99,16 @@ function toShow(event) {
       ),
     }));
 
+  const local = event.dates?.start?.localDate
+    ? wallClock(`${event.dates.start.localDate}T${event.dates.start.localTime || '20:00'}`)
+    : null;
+
   return {
     id: `tm:${event.id}`,
     source: 'ticketmaster',
     name: event.name,
     start,
+    displayDate: local || start,
     dateTBA: !event.dates?.start?.dateTime && !event.dates?.start?.localTime,
     artists: artists.length ? artists : [{ name: cleanEventName(event.name), spotifyId: null }],
     venue: {

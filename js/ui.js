@@ -46,7 +46,8 @@ export function renderShows(container, shows, { excluded, place, onToggle }) {
 
     const meta = document.createElement('div');
     meta.className = 'show-meta';
-    meta.append(span('show-date', `${formatDay(show.start)}${show.dateTBA ? '' : ` · ${formatTime(show.start)}`}`));
+    const when = show.displayDate || show.start;
+    meta.append(span('show-date', `${formatDay(when)}${show.dateTBA ? '' : ` · ${formatTime(when)}`}`));
     meta.append(span('', venueLine(show, place)));
     if (show.genre) meta.append(span('badge', genreLabel(show.genre) || show.genre));
     if (show.url) {
@@ -99,7 +100,10 @@ export function renderTracks(container, tracks) {
 
     if (track.show) {
       li.append(
-        span('track-when', `${formatDay(track.show.start)} · ${track.show.venue?.name || 'TBA'}`)
+        span(
+          'track-when',
+          `${formatDay(track.show.displayDate || track.show.start)} · ${track.show.venue?.name || 'TBA'}`
+        )
       );
     }
     container.append(li);

@@ -83,7 +83,9 @@ export function toText(tracks) {
   return tracks
     .map((t) => {
       const show = t.show;
-      const when = show ? ` — ${formatDay(show.start)} at ${show.venue?.name || 'TBA'}` : '';
+      const when = show
+        ? ` — ${formatDay(show.displayDate || show.start)} at ${show.venue?.name || 'TBA'}`
+        : '';
       return `${t.artistName} — ${t.title}${when}`;
     })
     .join('\n');

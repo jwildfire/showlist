@@ -14,3 +14,4 @@ jobs:
         with:
           node-version: 22
       - run: node --test tests/unit.test.mjs
+      - run: node sweep/validate.mjs
