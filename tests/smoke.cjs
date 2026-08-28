@@ -343,6 +343,8 @@ async function main() {
         json({ artists: { items: [{ id: 'a1', name: 'Khruangbin', popularity: 70, images: [], external_urls: {} }] } })
       );
     } else if (url.includes('type=track')) {
+      const limit = Number(new URL(url).searchParams.get('limit') || 20);
+      assert(limit <= 20, `track search asked for limit=${limit}; Spotify rejects large limits`);
       await route.fulfill(
         json({
           tracks: {
