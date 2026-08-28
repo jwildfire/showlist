@@ -81,11 +81,19 @@ function restoreControls() {
   el('customEnd').value = controls.customEnd;
   el('customRange').hidden = controls.range !== 'custom';
 
-  const credentials = store.getCredentials();
-  el('tmKey').value = credentials.ticketmasterKey;
-  el('bitAppId').value = credentials.bandsintownAppId;
-  el('spotifyClientId').value = credentials.spotifyClientId;
-  el('googleClientId').value = credentials.googleClientId;
+  const stored = store.getStoredCredentials();
+  el('tmKey').value = stored.ticketmasterKey;
+  el('bitAppId').value = stored.bandsintownAppId;
+  el('spotifyClientId').value = stored.spotifyClientId;
+  el('googleClientId').value = stored.googleClientId;
+  for (const [field, id] of [
+    ['spotifyClientId', 'spotifyClientId'],
+    ['googleClientId', 'googleClientId'],
+  ]) {
+    if (store.hasBuiltIn(field) && !stored[field]) {
+      el(id).placeholder = "this site has one built in — leave blank to use it";
+    }
+  }
 
   el('watchlist').value = store.getWatchlist().join('\n');
   updateWatchlistCount();

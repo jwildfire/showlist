@@ -61,8 +61,16 @@ Free tier: 5 requests/second, 5,000 requests/day. A scan costs 1–3 requests.
 3. Under **Redirect URIs**, paste the URI shown in Showlist's Setup panel —
    exactly, including the trailing slash. For the deployed site that's
    `https://jwildfire.github.io/showlist/`.
-4. Copy the **Client ID** into Setup. **Leave the client secret alone** —
-   Showlist uses PKCE, which doesn't need one.
+4. Copy the **Client ID**. Put it in `js/config.js` and commit it — client IDs
+   are public identifiers, not secrets, and then the site is zero-setup on
+   every device: visitors just press *Connect Spotify* and log in. (Pasting it
+   into the Setup panel instead works too, but only for that one browser.)
+   **Leave the client secret alone** — PKCE doesn't need one.
+
+While your app is in Spotify's default *development mode*, only you and up to
+25 accounts you add under **User Management** in the dashboard can log in.
+That's normally plenty for a personal site; lifting it needs a quota-extension
+request to Spotify.
 
 Showlist asks for permission to read your top artists and to create playlists.
 It never modifies playlists it didn't create.
@@ -75,7 +83,9 @@ It never modifies playlists it didn't create.
    test user.
 3. Create an **OAuth client ID** of type **Web application**, with
    `https://jwildfire.github.io` as an *Authorized JavaScript origin*.
-4. Copy the client ID into Setup.
+4. Copy the client ID into `js/config.js` (or the Setup panel). Same story as
+   Spotify: while the OAuth consent screen is in testing, only accounts you add
+   as test users can authorize.
 
 Mind the quota: the default allowance is 10,000 units/day, and each track
 match costs a 100-unit search plus a 50-unit insert. That's roughly 60 songs a

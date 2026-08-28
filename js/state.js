@@ -1,5 +1,7 @@
 // Everything the app remembers between visits. Nothing leaves this browser.
 
+import { CONFIG } from './config.js';
+
 const KEY = 'showlist:v1';
 
 export const DEFAULT_CONTROLS = {
@@ -56,8 +58,26 @@ export function getState() {
   return state;
 }
 
+/**
+ * What you typed in Setup wins; otherwise fall back to the client IDs the site
+ * ships with, so a deployed copy can be zero-setup.
+ */
 export function getCredentials() {
+  return {
+    ...state.credentials,
+    spotifyClientId: state.credentials.spotifyClientId || CONFIG.spotifyClientId || '',
+    googleClientId: state.credentials.googleClientId || CONFIG.googleClientId || '',
+  };
+}
+
+/** Only what this browser has stored — used to fill the Setup fields. */
+export function getStoredCredentials() {
   return { ...state.credentials };
+}
+
+/** True when the site itself supplies this credential. */
+export function hasBuiltIn(name) {
+  return Boolean(CONFIG[name]);
 }
 
 export function setCredentials(patch) {
