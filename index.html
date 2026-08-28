@@ -143,11 +143,15 @@
         <section class="card panel" id="playlistPanel" hidden aria-labelledby="playlist-heading">
           <div class="panel-head">
             <h2 id="playlist-heading">Playlist <span class="count" id="trackCount"></span></h2>
-            <button type="button" class="btn btn-primary btn-small" id="build">Build playlist</button>
+            <div class="panel-tools">
+              <button type="button" class="btn btn-spotify btn-small" id="playAll" hidden>▶ Play all</button>
+              <button type="button" class="btn btn-primary btn-small" id="build">Build playlist</button>
+            </div>
           </div>
           <p class="hint" id="playlistNote">
             Top 3 tracks for each artist you've kept, in show order.
           </p>
+          <div class="player" id="player" hidden></div>
           <ol class="tracks" id="trackList"></ol>
           <div class="save-row" id="saveRow" hidden>
             <button type="button" class="btn btn-spotify" id="saveSpotify">Save to Spotify</button>

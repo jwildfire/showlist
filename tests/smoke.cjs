@@ -418,6 +418,93 @@ async function main() {
   assert(/Copy list/.test(writeBanner), `banner should name the workaround, got "${writeBanner}"`);
   steps.push('playlist-write 403 disables the button and names the workaround');
 
+  // 13. The embedded player: no token, so it works even where writes don't.
+  const listen = await browser.newContext();
+  const embed = await listen.newPage();
+  embed.on('pageerror', (err) => errors.push(String(err)));
+  await embed.addInitScript(() => {
+    localStorage.setItem(
+      'showlist:spotify',
+      JSON.stringify({
+        clientId: 'test',
+        accessToken: 'fake',
+        refreshToken: 'r',
+        expiresAt: Date.now() + 3600000,
+        profile: { id: 'me', name: 'Tester', market: 'US' },
+      })
+    );
+  });
+  await embed.route('https://api.spotify.com/**', async (route) => {
+    const url = route.request().url();
+    if (url.includes('type=artist')) {
+      await route.fulfill(json({ artists: { items: [{ id: 'a1', name: 'Meltt', popularity: 60, images: [], external_urls: {} }] } }));
+    } else if (url.includes('type=track')) {
+      await route.fulfill(
+        json({
+          tracks: {
+            items: [1, 2, 3].map((n) => ({
+              id: 't' + n,
+              uri: 'spotify:track:t' + n,
+              name: 'Song ' + n,
+              popularity: 100 - n,
+              artists: [{ name: 'Meltt' }],
+              album: { images: [] },
+              external_urls: {},
+            })),
+          },
+        })
+      );
+    } else if (url.includes('/top-tracks')) {
+      await route.fulfill({ status: 403, contentType: 'application/json', body: '{"error":{"status":403,"message":"Forbidden"}}' });
+    } else {
+      await route.fulfill(json({ id: 'me', display_name: 'Tester', country: 'US' }));
+    }
+  });
+  // Stand in for Spotify's iFrame API, which this sandbox can't reach.
+  await embed.route('https://open.spotify.com/embed/iframe-api/v1', async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'text/javascript',
+      body: `window.__player = { loaded: [], plays: 0 };
+        window.onSpotifyIframeApiReady({
+          createController: (el, opts, cb) => {
+            window.__player.loaded.push(opts.uri);
+            el.innerHTML = '<iframe title="stub"></iframe>';
+            cb({
+              loadUri: (u) => window.__player.loaded.push(u),
+              play: () => window.__player.plays++,
+              pause: () => {},
+              addListener: (name, fn) => { window.__ended = fn; },
+            });
+          },
+        });`,
+    });
+  });
+
+  await embed.goto(base);
+  await embed.selectOption('#source', 'demo');
+  await embed.click('#find');
+  await embed.waitForSelector('.show');
+  await embed.click('#selectNone');
+  await embed.locator('.show input[type=checkbox]').first().check();
+  await embed.click('#build');
+  await embed.waitForSelector('.track');
+
+  assert(!(await embed.locator('#playAll').isHidden()), 'Play all should appear for streamable tracks');
+  await embed.click('#playAll');
+  await embed.waitForFunction(() => window.__player?.plays > 0);
+  assert(!(await embed.locator('#player').isHidden()), 'the player should become visible');
+  const first = await embed.evaluate(() => window.__player.loaded[0]);
+  assert(first === 'spotify:track:t1', `player should start on the first track, got ${first}`);
+  assert(await embed.locator('.track.playing').count(), 'the playing row should be marked');
+
+  // Fake the track running out; the queue should roll on by itself.
+  await embed.evaluate(() => window.__ended({ data: { position: 200000, duration: 200000 } }));
+  await embed.waitForFunction(() => window.__player.loaded.includes('spotify:track:t2'));
+  const nowPlaying = await embed.locator('.track.playing .track-title').textContent();
+  assert(nowPlaying === 'Song 2', `should have advanced to track 2, marked ${nowPlaying}`);
+  steps.push('embedded player streams without a token and auto-advances');
+
   await browser.close();
   server.close();
 

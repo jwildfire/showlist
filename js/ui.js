@@ -73,13 +73,14 @@ function venueLine(show, place) {
   return parts.filter(Boolean).join(' · ');
 }
 
-export function renderTracks(container, tracks) {
+export function renderTracks(container, tracks, { onPlay } = {}) {
   stopPreview();
   container.replaceChildren();
 
   tracks.forEach((track, i) => {
     const li = document.createElement('li');
     li.className = 'track';
+    li.dataset.index = String(i);
 
     li.append(span('track-num', String(i + 1)));
 
@@ -104,7 +105,10 @@ export function renderTracks(container, tracks) {
     // Search links work for everyone — no key, no login, nothing to connect.
     const links = document.createElement('div');
     links.className = 'track-links';
-    if (track.preview) links.append(preview(track.preview));
+    // A Spotify track streams through the embedded player; anything else falls
+    // back to the catalogue's own 30-second clip.
+    if (track.uri && onPlay) links.append(playButton(() => onPlay(i)));
+    else if (track.preview) links.append(preview(track.preview));
     links.append(outLink(youtubeSearch(track), 'YouTube'), outLink(spotifySearch(track), 'Spotify'));
 
     body.append(main, links);
@@ -153,6 +157,27 @@ function outLink(href, label) {
 
 let player = null;
 let playingButton = null;
+
+function playButton(onClick) {
+  const button = document.createElement('button');
+  button.type = 'button';
+  button.className = 'preview-btn';
+  button.textContent = '▶';
+  button.title = 'Play in the Spotify player';
+  button.setAttribute('aria-label', 'Play in the Spotify player');
+  button.addEventListener('click', onClick);
+  return button;
+}
+
+/** Mark which row the embedded player is on. */
+export function markPlaying(container, index) {
+  for (const row of container.querySelectorAll('.track')) {
+    row.classList.toggle('playing', Number(row.dataset.index) === index);
+  }
+  container
+    .querySelector(`.track[data-index="${index}"]`)
+    ?.scrollIntoView({ block: 'nearest' });
+}
 
 /**
  * A 30-second preview as one small button. The native <audio> player is

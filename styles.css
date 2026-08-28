@@ -637,6 +637,28 @@ button:focus-visible {
   white-space: nowrap;
 }
 
+.player {
+  margin: 12px 0 0;
+  border-radius: 12px;
+  overflow: hidden;
+  min-height: 80px;
+}
+
+.player iframe {
+  display: block;
+  border: 0;
+}
+
+.track.playing {
+  border-color: var(--spotify);
+  background: color-mix(in srgb, var(--spotify) 12%, var(--bg-elev-2));
+}
+
+.track.playing .track-title {
+  color: var(--text);
+  font-weight: 600;
+}
+
 .save-row {
   display: flex;
   flex-wrap: wrap;

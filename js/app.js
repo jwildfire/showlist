@@ -4,6 +4,7 @@ import * as store from './state.js';
 import * as spotify from './music/spotify.js';
 import * as youtube from './music/youtube.js';
 import * as itunes from './music/itunes.js';
+import * as player from './music/player.js';
 import * as local from './sources/local.js';
 import * as ticketmaster from './sources/ticketmaster.js';
 import * as bandsintown from './sources/bandsintown.js';
@@ -19,7 +20,7 @@ import {
   toJson,
   toText,
 } from './playlist.js';
-import { renderGenreChips, renderLinks, renderShows, renderTracks } from './ui.js';
+import { markPlaying, renderGenreChips, renderLinks, renderShows, renderTracks } from './ui.js';
 import { toLinkList } from './links.js';
 
 const SOURCES = { local, ticketmaster, bandsintown, demo };
@@ -153,6 +154,8 @@ function wireEvents() {
   el('saveYouTube').addEventListener('click', () => guard(saveToYouTube));
   el('copyList').addEventListener('click', () => guard(copyList));
   el('copyLinks').addEventListener('click', () => guard(copyLinks));
+  el('playAll').addEventListener('click', () => guard(() => playFrom(0)));
+  player.onTrackChange((i) => markPlaying(el('trackList'), i));
   el('downloadJson').addEventListener('click', downloadJson);
 
   el('selectAll').addEventListener('click', () => setAllShows(true));
@@ -317,6 +320,9 @@ async function runFind() {
   view.tracks = [];
   view.missing = [];
   el('trackList').replaceChildren();
+  player.stop();
+  player.setQueue([]);
+  el('playAll').hidden = true;
   el('saveRow').hidden = true;
   el('playlistLinks').replaceChildren();
   el('trackCount').textContent = '';
@@ -421,7 +427,13 @@ async function runBuild() {
   view.tracks = tracks;
   view.missing = missing;
 
-  renderTracks(el('trackList'), tracks);
+  renderTracks(el('trackList'), tracks, { onPlay: (i) => guard(() => playFrom(i)) });
+
+  // Spotify's embed player needs no token, so it works even when this app
+  // isn't allowed to write playlists.
+  const playable = tracks.filter((t) => t.uri);
+  player.setQueue(tracks.map((t) => t.uri || null));
+  el('playAll').hidden = !playable.length;
   el('trackCount').textContent = `${tracks.length} tracks · ${artists.length - missing.length} artists`;
   el('saveRow').hidden = tracks.length === 0;
   syncSaveButtons();
@@ -463,6 +475,20 @@ function commonReason(missing) {
     counts.set(item.reason, (counts.get(item.reason) || 0) + 1);
   }
   return [...counts.entries()].sort((a, b) => b[1] - a[1])[0]?.[0] || '';
+}
+
+/* ---------- playback ---------- */
+
+/** Play track `i` in the embedded player, skipping ahead if it isn't streamable. */
+async function playFrom(i) {
+  let index = i;
+  while (index < view.tracks.length && !view.tracks[index]?.uri) index++;
+  if (index >= view.tracks.length) throw new Error('No Spotify-streamable tracks in this list.');
+
+  setStatus('Starting the Spotify player…', true);
+  await player.playAt(index, el('player'));
+  const track = view.tracks[index];
+  setStatus(`Playing ${track.title} — ${track.artistName}. Full tracks need Spotify Premium in this browser; otherwise it's a 30-second preview.`);
 }
 
 /* ---------- saving ---------- */

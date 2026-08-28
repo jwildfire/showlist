@@ -102,6 +102,12 @@ around, both confirmed against a live development-mode app:
   **Copy list** → an importer instead. Lifting it needs a quota extension from
   Spotify.
 
+None of this touches playback. Spotify's **embed player** needs no token and
+no app permissions, so *▶ Play all* and the play button on each track work
+regardless: press one and the playlist runs top to bottom in an embedded
+player, advancing by itself. Whole tracks play for a viewer signed into
+Spotify Premium in that browser; everyone else hears the 30-second preview.
+
 Showlist asks for permission to read your top artists and to create playlists.
 It never modifies playlists it didn't create.
 
@@ -238,7 +244,7 @@ js/sources/*.js       local (the preloaded sweep), ticketmaster, bandsintown, de
 data/shows.json       the swept listings, and the area + venues they cover
 sweep/                the weekly refresh spec and its validator
 js/music/*.js         spotify (PKCE), youtube (Google Identity Services),
-                      itunes (keyless track lookup)
+                      itunes (keyless track lookup), player (Spotify embed)
 js/links.js           credential-free search URLs per track
 ```
 
