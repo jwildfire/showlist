@@ -234,15 +234,17 @@ line in `js/app.js`.
 
 ## The weekly refresh
 
-A scheduled Claude Code session runs the sweep every **Monday at 08:00 ET**,
-following [sweep/README.md](sweep/README.md): it re-searches the venue
-calendars, prunes shows that have happened, validates the file, and pushes.
-The Pages deploy runs off that push, so the site is never more than a week
-stale — and the app shows the sweep date above the results.
+Ask Claude Code to **"refresh the Showlist sweep"** and it follows
+[sweep/README.md](sweep/README.md): re-searches the venue calendars, prunes
+shows that have happened, validates the file, and pushes. The Pages deploy runs
+off that push, and the app shows the sweep date above the results, so stale
+data is always visible rather than silent.
 
-To change the cadence, or to stop it, edit the "Showlist weekly concert sweep"
-routine in your Claude routines. To run it on demand, ask Claude Code to
-"refresh the Showlist sweep".
+There's a paused weekly routine set up for this
+("Showlist weekly concert sweep"). It's paused because a routine-fired session
+has no way to gain write access to this repo — see
+[sweep/README.md](sweep/README.md#running-it-on-a-schedule) for what it needs
+before it can be switched on.
 
 ## Sweeping a different area
 

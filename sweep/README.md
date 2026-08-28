@@ -64,6 +64,25 @@ hand.
 - Artist names should be spelled the way the artist spells them, so Spotify
   can match them: `Black Country, New Road`, not `Black Country New Road`.
 
+## Running it on a schedule
+
+Scheduled (routine-fired) Claude sessions start with only the repositories
+their **environment** is configured with, and without the tool that attaches
+one on the fly. A routine that fires into an environment which doesn't already
+carry this repo will do the whole sweep and then fail at `git push` — verified
+the hard way: a fired session ran the full 12-minute sweep and committed
+nothing, and a follow-up test that did nothing but try to attach and push
+produced no branch.
+
+So before switching the weekly routine on, add `jwildfire/showlist` as a source
+repo on the environment the routine fires into (Claude Code → environment
+settings), or point the routine at an environment built from this repo. Then
+re-enable "Showlist weekly concert sweep" and fire it once to confirm a commit
+lands.
+
+Until then, run it by hand: it's one sentence in a normal Claude Code session,
+which *does* have repo access.
+
 ## Changing the territory
 
 Edit `area` (label, lat/lon, radius) and the `venues` list in
