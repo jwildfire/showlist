@@ -395,6 +395,29 @@ async function main() {
   assert(devAdded.flatMap((b) => b.uris || []).length === 3, 'should post 3 uris');
   steps.push('403 on top-tracks falls through to search, still saveable to Spotify');
 
+  // 12. An app that can read but not write: the save button should retire
+  //     itself and point at the route that does work.
+  await dev.unroute('https://api.spotify.com/**');
+  await dev.route('https://api.spotify.com/**', async (route) => {
+    if (route.request().method() === 'POST') {
+      await route.fulfill({
+        status: 403,
+        contentType: 'application/json',
+        body: JSON.stringify({ error: { status: 403, message: 'Forbidden' } }),
+      });
+      return;
+    }
+    await route.fulfill(json({ id: 'me', display_name: 'Tester', country: 'US' }));
+  });
+  await dev.click('#saveSpotify');
+  // The button retires in the catch, before the banner renders — wait for the
+  // banner, which is the later of the two.
+  await dev.waitForFunction(() => /Copy list/.test(document.getElementById('errorText').textContent));
+  assert(await dev.locator('#saveSpotify').isDisabled(), 'a write-blocked app should retire the button');
+  const writeBanner = await dev.locator('#errorText').textContent();
+  assert(/Copy list/.test(writeBanner), `banner should name the workaround, got "${writeBanner}"`);
+  steps.push('playlist-write 403 disables the button and names the workaround');
+
   await browser.close();
   server.close();
 

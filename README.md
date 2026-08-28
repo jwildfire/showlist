@@ -95,6 +95,12 @@ around, both confirmed against a live development-mode app:
 - **`limit` above 5 returns `400 "Invalid limit"`** — on every endpoint, even
   though the documented maximum is 50. Omitting it defaults to exactly 5. So
   every request here asks for 5 and pages with `offset` when it needs more.
+- **Creating a playlist can return a bare `403 Forbidden`** — for both public
+  and private, with reads on the same token working fine, so it is not a
+  missing scope. An app in that state can read Spotify but not write to it.
+  Showlist detects this, retires the *Save to Spotify* button, and points at
+  **Copy list** → an importer instead. Lifting it needs a quota extension from
+  Spotify.
 
 Showlist asks for permission to read your top artists and to create playlists.
 It never modifies playlists it didn't create.
@@ -171,7 +177,7 @@ date, so the soonest shows are at the top.
 | **The per-track YouTube / Spotify links, and *Copy links*** | Anyone. They're just search URLs. |
 | **Demo data** | Anyone. |
 | **Ticketmaster / Bandsintown listings** | Anyone who brings their own key or app id. |
-| **Saving to Spotify** | The app owner, plus up to **25 accounts** added under *User Management* in the Spotify dashboard. Anyone else can paste their own client ID in Setup and use their own app. |
+| **Saving to Spotify** | The app owner, plus up to **25 accounts** added under *User Management* in the Spotify dashboard — *and* only if the app is permitted to write playlists at all (see the development-mode notes above). Anyone else can paste their own client ID in Setup and use their own app. |
 | **Saving to YouTube** | The owner plus test users on the Google consent screen (up to 100) — and all of them share **one** 10,000-unit daily quota, roughly 60 songs a day in total. |
 
 Only the two *save* rows are gated. Everything up to and including a finished,

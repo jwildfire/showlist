@@ -29,6 +29,7 @@ const el = (id) => document.getElementById(id);
 const view = {
   shows: [],
   place: null,
+  spotifyWritesBlocked: false,
   excluded: new Set(),
   artists: [],
   tracks: [],
@@ -489,11 +490,27 @@ async function saveToSpotify() {
 
   const meta = playlistMeta();
   setStatus('Creating the playlist in your Spotify account…', true);
-  const result = await spotify.createPlaylist({
-    ...meta,
-    tracks: view.tracks,
-    onProgress: (done, total) => setStatus(`Adding tracks… ${done}/${total}`, true),
-  });
+
+  let result;
+  try {
+    result = await spotify.createPlaylist({
+      ...meta,
+      tracks: view.tracks,
+      onProgress: (done, total) => setStatus(`Adding tracks… ${done}/${total}`, true),
+    });
+  } catch (err) {
+    if (!/403/.test(err.message)) throw err;
+    // Reading works, writing doesn't: this Spotify app isn't allowed to create
+    // playlists. Nothing here can fix that, so point at the route that works.
+    view.spotifyWritesBlocked = true;
+    syncSaveButtons();
+    throw new Error(
+      'Spotify refused to create the playlist (403 Forbidden — not a scope problem, ' +
+        'both private and public are refused). This Spotify app can read but not write. ' +
+        'Use Copy list and paste into an importer like Spotlistr, which has its own ' +
+        'approved app — the tracklist is already on your clipboard-ready list below.'
+    );
+  }
 
   renderLinks(el('playlistLinks'), [
     { label: `Open "${meta.title}" on Spotify`, url: result.url, note: `${result.trackCount} tracks` },
@@ -633,10 +650,16 @@ function refreshServiceChips() {
 
 function syncSaveButtons() {
   if (view.busy) return;
-  el('saveSpotify').disabled = !view.tracks.length || !spotify.isConnected() || view.provider !== 'spotify';
-  el('saveSpotify').title = spotify.isConnected()
-    ? ''
-    : 'Connect Spotify in Setup to save playlists to your account';
+  el('saveSpotify').disabled =
+    !view.tracks.length ||
+    !spotify.isConnected() ||
+    view.provider !== 'spotify' ||
+    view.spotifyWritesBlocked;
+  el('saveSpotify').title = view.spotifyWritesBlocked
+    ? 'This Spotify app is not allowed to create playlists — use Copy list instead'
+    : spotify.isConnected()
+      ? ''
+      : 'Connect Spotify in Setup to save playlists to your account';
   el('saveYouTube').disabled = !view.tracks.length;
   el('copyLinks').disabled = !view.tracks.length;
 }
