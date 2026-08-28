@@ -198,9 +198,11 @@ async function api(path, { method = 'GET', body, attempt = 1 } = {}) {
     // 403 on a valid token is almost always the app's own configuration, not
     // anything a retry fixes.
     if (res.status === 403) {
+      // Keep Spotify's own wording — "Insufficient client scope" and
+      // "Forbidden" mean very different things and need different fixes.
       throw new Error(
-        'Spotify returned 403 Forbidden — apps in development mode can’t reach this ' +
-          'endpoint. Retrying will not help.'
+        `Spotify 403 on ${path.split('?')[0]}${message ? `: ${message}` : ' (no detail given)'}. ` +
+          'Retrying will not help — this is a permission or app-mode limit.'
       );
     }
     throw new Error(

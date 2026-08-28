@@ -300,8 +300,8 @@ async function main() {
   assert(fallbackTracks > 0, 'a Spotify outage should not leave an empty playlist');
   const banner = await failing.locator('#errorText').textContent();
   assert(
-    /Spotify/.test(banner) && /403/.test(banner) && /development mode/.test(banner),
-    `banner should name the cause, got "${banner}"`
+    /Spotify/.test(banner) && /403/.test(banner) && /Forbidden/.test(banner),
+    `banner should carry Spotify's own message, got "${banner}"`
   );
   assert(
     await failing.locator('#saveSpotify').isDisabled(),
