@@ -215,6 +215,38 @@ async function main() {
   assert(!(await anon.locator('#copyLinks').isDisabled()), 'Copy links should work with no account');
   steps.push(`keyless path built ${anonTracks} tracks with search links, no login`);
 
+  // 9. The built-in client ID is actually used, and the authorize request is
+  //    shaped the way Spotify (and the app's registered redirect URI) needs.
+  const fresh = await browser.newContext();
+  const connect = await fresh.newPage();
+  let authorizeUrl = null;
+  await connect.route('https://accounts.spotify.com/**', async (route) => {
+    authorizeUrl = route.request().url();
+    await route.fulfill({ status: 200, contentType: 'text/html', body: '<p>stub</p>' });
+  });
+  await connect.goto(base);
+  await connect.click('#setupBtn');
+  await connect.click('#connectSpotify');
+  await connect.waitForFunction(() => !document.querySelector('#setupDialog[open]') || true);
+  await connect.waitForTimeout(600);
+  assert(authorizeUrl, 'Connect Spotify should send you to accounts.spotify.com');
+  const auth = new URL(authorizeUrl);
+  const expect = {
+    client_id: 'bc3960b18f1e4d77a05439653fb1b732',
+    response_type: 'code',
+    code_challenge_method: 'S256',
+  };
+  for (const [key, value] of Object.entries(expect)) {
+    assert(auth.searchParams.get(key) === value, `${key} was "${auth.searchParams.get(key)}"`);
+  }
+  assert(auth.searchParams.get('redirect_uri') === base, `redirect_uri was ${auth.searchParams.get('redirect_uri')}`);
+  assert((auth.searchParams.get('code_challenge') || '').length >= 43, 'missing PKCE challenge');
+  assert(
+    (auth.searchParams.get('scope') || '').includes('playlist-modify-private'),
+    'missing the playlist scope'
+  );
+  steps.push('Connect Spotify uses the built-in client ID with a valid PKCE challenge');
+
   await browser.close();
   server.close();
 

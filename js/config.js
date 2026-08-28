@@ -13,6 +13,6 @@
 // Google: console.cloud.google.com → enable YouTube Data API v3 → OAuth client
 //   ID → Web application → add this site's origin as a JavaScript origin.
 export const CONFIG = {
-  spotifyClientId: '',
+  spotifyClientId: 'bc3960b18f1e4d77a05439653fb1b732',
   googleClientId: '',
 };
