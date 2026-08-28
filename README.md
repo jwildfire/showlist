@@ -86,6 +86,12 @@ While your app is in Spotify's default *development mode*, only you and up to
 That's normally plenty for a personal site; lifting it needs a quota-extension
 request to Spotify.
 
+Development mode also blocks some Web API endpoints with a bare
+`403 Forbidden` — `/artists/{id}/top-tracks` among them. Showlist tries that
+endpoint once, and on a 403 switches to ranking `/search` results by Spotify's
+popularity score for the rest of the run, which returns the same kind of
+answer from an endpoint development-mode apps can reach.
+
 Showlist asks for permission to read your top artists and to create playlists.
 It never modifies playlists it didn't create.
 

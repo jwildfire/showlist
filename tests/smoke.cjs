@@ -300,14 +300,96 @@ async function main() {
   assert(fallbackTracks > 0, 'a Spotify outage should not leave an empty playlist');
   const banner = await failing.locator('#errorText').textContent();
   assert(
-    /Spotify/.test(banner) && /403/.test(banner) && /User Management/.test(banner),
-    `banner should name the cause and the fix, got "${banner}"`
+    /Spotify/.test(banner) && /403/.test(banner) && /development mode/.test(banner),
+    `banner should name the cause, got "${banner}"`
   );
   assert(
     await failing.locator('#saveSpotify').isDisabled(),
     'fallback tracks have no Spotify ids, so saving there must stay off'
   );
   steps.push(`Spotify 403 fell back to ${fallbackTracks} catalogue tracks, cause reported`);
+
+  // 11. Development-mode reality: /artists/{id}/top-tracks is 403 but /search
+  //     works, so the build should still produce saveable Spotify tracks.
+  const devMode = await browser.newContext();
+  const dev = await devMode.newPage();
+  dev.on('pageerror', (err) => errors.push(String(err)));
+  await dev.addInitScript(() => {
+    localStorage.setItem(
+      'showlist:spotify',
+      JSON.stringify({
+        clientId: 'test',
+        accessToken: 'fake',
+        refreshToken: 'fake-refresh',
+        expiresAt: Date.now() + 3600000,
+        profile: { id: 'me', name: 'Tester', market: 'US' },
+      })
+    );
+  });
+
+  let topTrackCalls = 0;
+  const devAdded = [];
+  await dev.route('https://api.spotify.com/**', async (route) => {
+    const url = route.request().url();
+    if (url.includes('/top-tracks')) {
+      topTrackCalls++;
+      await route.fulfill({
+        status: 403,
+        contentType: 'application/json',
+        body: JSON.stringify({ error: { status: 403, message: 'Forbidden' } }),
+      });
+    } else if (url.includes('type=artist')) {
+      await route.fulfill(
+        json({ artists: { items: [{ id: 'a1', name: 'Khruangbin', popularity: 70, images: [], external_urls: {} }] } })
+      );
+    } else if (url.includes('type=track')) {
+      await route.fulfill(
+        json({
+          tracks: {
+            items: [
+              // Deliberately out of order, with a duplicate and a wrong artist.
+              { id: 't2', uri: 'spotify:track:t2', name: 'Second', popularity: 50, artists: [{ name: 'Khruangbin' }], album: { images: [] }, external_urls: {} },
+              { id: 't1', uri: 'spotify:track:t1', name: 'First', popularity: 90, artists: [{ name: 'Khruangbin' }], album: { images: [] }, external_urls: {} },
+              { id: 't1b', uri: 'spotify:track:t1b', name: 'first', popularity: 80, artists: [{ name: 'Khruangbin' }], album: { images: [] }, external_urls: {} },
+              { id: 'x', uri: 'spotify:track:x', name: 'Not Theirs', popularity: 99, artists: [{ name: 'Someone Else' }], album: { images: [] }, external_urls: {} },
+              { id: 't3', uri: 'spotify:track:t3', name: 'Third', popularity: 10, artists: [{ name: 'Khruangbin' }], album: { images: [] }, external_urls: {} },
+            ],
+          },
+        })
+      );
+    } else if (url.includes('/users/') && url.endsWith('/playlists')) {
+      await route.fulfill(json({ id: 'pl2', external_urls: { spotify: 'https://open.spotify.com/playlist/pl2' } }));
+    } else if (url.includes('/playlists/') && url.endsWith('/tracks')) {
+      devAdded.push(JSON.parse(route.request().postData() || '{}'));
+      await route.fulfill(json({ snapshot_id: 's1' }));
+    } else {
+      await route.fulfill(json({ id: 'me', display_name: 'Tester', country: 'US' }));
+    }
+  });
+
+  await dev.goto(base);
+  await dev.selectOption('#source', 'demo');
+  await dev.click('#find');
+  await dev.waitForSelector('.show');
+  await dev.locator('.show input[type=checkbox]').nth(0).check();
+  // Keep one show so the assertions are about ordering, not volume.
+  await dev.click('#selectNone');
+  await dev.locator('.show input[type=checkbox]').first().check();
+  await dev.click('#build');
+  await dev.waitForSelector('.track');
+
+  const titles = await dev.locator('.track-title').allTextContents();
+  assert(titles.length === 3, `expected 3 tracks, got ${titles.length}: ${titles}`);
+  assert(titles[0] === 'First', `popularity should rank first, got ${titles[0]}`);
+  assert(!titles.includes('Not Theirs'), 'another artist’s track leaked in');
+  assert(titles.filter((t) => t.toLowerCase() === 'first').length === 1, 'duplicate reissue not collapsed');
+  assert(topTrackCalls === 1, `top-tracks should be tried once then abandoned, tried ${topTrackCalls}`);
+
+  assert(!(await dev.locator('#saveSpotify').isDisabled()), 'search-sourced tracks must be saveable');
+  await dev.click('#saveSpotify');
+  await dev.waitForSelector('#playlistLinks a');
+  assert(devAdded.flatMap((b) => b.uris || []).length === 3, 'should post 3 uris');
+  steps.push('403 on top-tracks falls through to search, still saveable to Spotify');
 
   await browser.close();
   server.close();

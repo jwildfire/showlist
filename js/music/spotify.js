@@ -23,6 +23,9 @@ const SCOPES = [
 export const service = { id: 'spotify', label: 'Spotify' };
 
 let session = read();
+// Set once we learn this app can't reach /artists/{id}/top-tracks, so a
+// 40-artist build doesn't make 40 doomed calls.
+let topTracksBlocked = false;
 
 function read() {
   try {
@@ -192,9 +195,8 @@ async function api(path, { method = 'GET', body, attempt = 1 } = {}) {
     // anything a retry fixes.
     if (res.status === 403) {
       throw new Error(
-        'Spotify returned 403 Forbidden. The token is valid, so this is the app’s setup: ' +
-          'add your Spotify account under Settings → User Management in the developer ' +
-          'dashboard, and check the app has Web API enabled. Retrying will not help.'
+        'Spotify returned 403 Forbidden — apps in development mode can’t reach this ' +
+          'endpoint. Retrying will not help.'
       );
     }
     throw new Error(
@@ -237,7 +239,34 @@ export async function findArtist(name) {
 
 export async function topTracks(artistId, market = 'US') {
   const body = await api(`/artists/${artistId}/top-tracks?market=${market}`);
-  return (body.tracks || []).map((t) => ({
+  return (body.tracks || []).map(toTrack);
+}
+
+/**
+ * The same job through /search, which development-mode apps can still reach —
+ * Spotify restricts /artists/{id}/top-tracks for them. Ranked by Spotify's own
+ * popularity score, with the same song on three reissues collapsed to one.
+ */
+export async function popularTracks(name, market = 'US', limit = 3) {
+  const q = encodeURIComponent(`artist:"${name}"`);
+  const body = await api(`/search?q=${q}&type=track&limit=50&market=${market}`);
+  const target = normalizeName(name);
+  const seen = new Set();
+  const tracks = [];
+
+  for (const item of (body.tracks?.items || []).sort((a, b) => b.popularity - a.popularity)) {
+    if (!(item.artists || []).some((a) => normalizeName(a.name) === target)) continue;
+    const key = normalizeName(item.name);
+    if (seen.has(key)) continue;
+    seen.add(key);
+    tracks.push(toTrack(item));
+    if (tracks.length >= limit) break;
+  }
+  return tracks;
+}
+
+function toTrack(t) {
+  return {
     id: t.id,
     uri: t.uri,
     title: t.name,
@@ -246,7 +275,7 @@ export async function topTracks(artistId, market = 'US') {
     popularity: t.popularity,
     url: t.external_urls?.spotify || '',
     art: t.album?.images?.[t.album.images.length - 1]?.url || '',
-  }));
+  };
 }
 
 /** Artists to seed a Bandsintown watchlist with. */
@@ -292,7 +321,18 @@ export async function resolveTracks(artists, { perArtist = 3, market = 'US', onP
         ? { id: artist.spotifyId, name: artist.name, exact: true }
         : await findArtist(artist.name);
       if (!match) return { artist, tracks: [], reason: 'not on Spotify' };
-      const tracks = (await topTracks(match.id, market)).slice(0, perArtist);
+
+      let tracks = [];
+      if (!topTracksBlocked) {
+        try {
+          tracks = (await topTracks(match.id, market)).slice(0, perArtist);
+        } catch (err) {
+          if (!/403/.test(err.message)) throw err;
+          topTracksBlocked = true;
+        }
+      }
+      if (!tracks.length) tracks = await popularTracks(match.name, market, perArtist);
+
       return { artist, match, tracks, reason: tracks.length ? null : 'no tracks in your market' };
     } catch (err) {
       return { artist, tracks: [], reason: err.message };
