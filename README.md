@@ -138,6 +138,24 @@ Artists are deduped case- and punctuation-insensitively, so a band playing
 three nights contributes one set of tracks. The playlist is ordered by show
 date, so the soonest shows are at the top.
 
+## Who can actually use a deployed copy
+
+| | Who |
+| --- | --- |
+| **Browsing the preloaded listings** | Anyone. No login, no key, nothing to install. |
+| **Demo data** | Anyone. |
+| **Ticketmaster / Bandsintown listings** | Anyone who brings their own key or app id. |
+| **Saving to Spotify** | The app owner, plus up to **25 accounts** added under *User Management* in the Spotify dashboard. Anyone else can paste their own client ID in Setup and use their own app. |
+| **Saving to YouTube** | The owner plus test users on the Google consent screen (up to 100) — and all of them share **one** 10,000-unit daily quota, roughly 60 songs a day in total. |
+
+Those caps are the OAuth providers' rules for unverified apps, not something
+this site imposes. Lifting Spotify's needs a quota-extension request; lifting
+Google's needs a security assessment for the restricted YouTube scope. For a
+personal site, staying inside them is normal.
+
+If someone hits the Spotify cap, the app now says so explicitly rather than
+reporting a generic sign-in failure.
+
 ## Privacy
 
 - Keys, tokens and settings live in `localStorage` / `sessionStorage` in your

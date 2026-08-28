@@ -85,7 +85,18 @@ export async function completeRedirect() {
   sessionStorage.removeItem(PENDING);
   cleanUrl();
 
-  if (error) throw new Error(`Spotify sign-in was cancelled (${error}).`);
+  if (error === 'access_denied') {
+    // Same error code whether you pressed cancel or your account simply isn't
+    // on the app's allowlist — a new Spotify app is limited to its owner plus
+    // 25 accounts added in the dashboard.
+    throw new Error(
+      'Spotify declined the sign-in. Either you cancelled, or this app is still in ' +
+        "Spotify's development mode and your account hasn't been added to it — the owner " +
+        'can add you under User Management in the Spotify dashboard. You can also put your ' +
+        'own Spotify client ID in Setup and use your own app.'
+    );
+  }
+  if (error) throw new Error(`Spotify sign-in failed (${error}).`);
   if (!pending) throw new Error('Spotify sign-in got out of sync — try connecting again.');
   if (pending.state !== params.get('state'))
     throw new Error('Spotify sign-in failed a security check — try again.');
