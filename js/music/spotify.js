@@ -11,6 +11,10 @@ const STORE = 'showlist:spotify';
 const PENDING = 'showlist:spotify:pending';
 
 const MAX_ATTEMPTS = 3;
+// Spotify caps `limit` at 5 for this class of app: anything larger comes back
+// as 400 "Invalid limit", and an omitted limit defaults to exactly 5. Verified
+// against a live development-mode app — 1 and 5 pass, 20 and 50 do not.
+const PAGE = 5;
 
 const SCOPES = [
   'playlist-modify-private',
@@ -221,7 +225,7 @@ export async function me() {
 /** Best-effort artist match. Exact-ish name wins; otherwise most popular. */
 export async function findArtist(name) {
   const q = encodeURIComponent(name);
-  const body = await api(`/search?q=${q}&type=artist&limit=5`);
+  const body = await api(`/search?q=${q}&type=artist&limit=${PAGE}`);
   const items = body.artists?.items || [];
   if (!items.length) return null;
   const target = normalizeName(name);
@@ -248,18 +252,17 @@ export async function topTracks(artistId, market = 'US') {
  * popularity score, with the same song on three reissues collapsed to one.
  */
 export async function popularTracks(name, market = 'US', limit = 3) {
-  // Keep the request in the plainest shape Spotify accepts: a bare keyword
-  // query, no field filters, no quotes. The `artist:"…"` form and the market
-  // parameter both drew 400s from a real development-mode app, and the
-  // artist matching below doesn't need Spotify to do the filtering.
+  // A bare keyword query: no field filter, no quotes, no market. Everything
+  // fancier drew a 400 from a live app, and the matching below doesn't need
+  // Spotify to do the filtering. Two pages of 5 give enough to rank from.
   const q = encodeURIComponent(name);
-  let body;
-  try {
-    body = await api(`/search?q=${q}&type=track&limit=20`);
-  } catch (err) {
-    if (!/40[03]/.test(err.message)) throw err;
-    body = await api(`/search?q=${q}&type=track`); // last resort: defaults only
-  }
+  const pages = await Promise.all([
+    api(`/search?q=${q}&type=track&limit=${PAGE}`),
+    api(`/search?q=${q}&type=track&limit=${PAGE}&offset=${PAGE}`).catch(() => null),
+  ]);
+  const body = {
+    tracks: { items: pages.flatMap((page) => page?.tracks?.items || []) },
+  };
   const target = normalizeName(name);
   const seen = new Set();
   const tracks = [];
@@ -289,13 +292,19 @@ function toTrack(t) {
 }
 
 /** Artists to seed a Bandsintown watchlist with. */
-export async function listeningArtists({ limit = 50 } = {}) {
+export async function listeningArtists({ pages = 4 } = {}) {
   const names = new Set();
+  // Same cap applies here, so walk it a page at a time instead of asking for 50.
   for (const term of ['short_term', 'medium_term']) {
-    const body = await api(`/me/top/artists?limit=${limit}&time_range=${term}`).catch(() => null);
-    for (const a of body?.items || []) names.add(a.name);
+    for (let page = 0; page < pages; page++) {
+      const body = await api(
+        `/me/top/artists?limit=${PAGE}&offset=${page * PAGE}&time_range=${term}`
+      ).catch(() => null);
+      if (!body?.items?.length) break;
+      for (const a of body.items) names.add(a.name);
+    }
   }
-  const followed = await api(`/me/following?type=artist&limit=${limit}`).catch(() => null);
+  const followed = await api(`/me/following?type=artist&limit=${PAGE}`).catch(() => null);
   for (const a of followed?.artists?.items || []) names.add(a.name);
   return [...names];
 }

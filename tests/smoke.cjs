@@ -344,8 +344,8 @@ async function main() {
       );
     } else if (url.includes('type=track')) {
       const params = new URL(url).searchParams;
-      const limit = Number(params.get('limit') || 20);
-      assert(limit <= 20, `track search asked for limit=${limit}; Spotify rejects large limits`);
+      const limit = Number(params.get('limit') || 5);
+      assert(limit <= 5, `track search asked for limit=${limit}; Spotify rejects anything over 5`);
       assert(!/[:"]/.test(params.get('q') || ''), `track search should stay a plain keyword query, got ${params.get('q')}`);
       await route.fulfill(
         json({
