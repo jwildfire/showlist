@@ -141,7 +141,8 @@ test('buildTracklist flattens per-artist results and reports misses', () => {
   assert.equal(tracks[0].artistName, 'Big Thief');
   assert.equal(tracks[1].rank, 2);
   assert.deepEqual(missing, [{ name: 'Nobody', reason: 'not on Spotify' }]);
-  assert.match(toText(tracks), /Big Thief — Vampire Empire — .* at Venue a/);
+  // Importer-friendly: no venue noise, plain hyphen.
+  assert.equal(toText(tracks), 'Big Thief - Vampire Empire\nBig Thief - Simulation Swarm');
 });
 
 test('wallClock reads the time as written, whatever the viewer timezone', async () => {
@@ -170,4 +171,8 @@ test('search links need no credentials and escape properly', async () => {
     'https://www.youtube.com/watch_videos?video_ids=aaa,bbb'
   );
   assert.match(links.toLinkList([track]), /^- Black Country, New Road — Turbines \/ Pigs · \[YouTube\]/);
+  assert.match(
+    links.toLinkList([track], { formatShow: () => 'Mon Oct 5, Cat’s Cradle' }),
+    /\(Mon Oct 5, Cat’s Cradle\) · \[YouTube\]/
+  );
 });

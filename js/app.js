@@ -9,7 +9,7 @@ import * as ticketmaster from './sources/ticketmaster.js';
 import * as bandsintown from './sources/bandsintown.js';
 import * as demo from './sources/demo.js';
 import { GENRES } from './genres.js';
-import { RANGE_PRESETS, resolveRange, toISODate } from './dates.js';
+import { formatDay, RANGE_PRESETS, resolveRange, toISODate } from './dates.js';
 import { geocode, locateMe } from './geo.js';
 import {
   artistsFromShows,
@@ -398,7 +398,7 @@ async function runBuild() {
 
   el('playlistNote').textContent = useSpotify
     ? "Top 3 tracks for each artist you've kept, from Spotify, in show order."
-    : "Top 3 tracks for each artist you've kept, in show order. Connect Spotify to save this as a playlist — or use the links on each track.";
+    : "Top 3 tracks for each artist you've kept, in show order. No Spotify app? Use the links on each track, or Copy list and paste it into an importer like Spotlistr.";
 
   const skipped = missing.length ? ` Skipped ${missing.length} (${missing.slice(0, 3).map((m) => m.name).join(', ')}${missing.length > 3 ? '…' : ''}).` : '';
   setStatus(
@@ -495,12 +495,19 @@ async function saveToYouTube() {
 async function copyList() {
   if (!view.tracks.length) throw new Error('Build a playlist first.');
   await navigator.clipboard.writeText(toText(view.tracks));
-  setStatus('Tracklist copied to your clipboard.');
+  setStatus(
+    'Copied as "Artist - Title" lines — paste straight into a playlist importer like Spotlistr or Soundiiz.'
+  );
 }
 
 async function copyLinks() {
   if (!view.tracks.length) throw new Error('Build a playlist first.');
-  await navigator.clipboard.writeText(toLinkList(view.tracks));
+  await navigator.clipboard.writeText(
+    toLinkList(view.tracks, {
+      formatShow: (show) =>
+        show ? `${formatDay(show.displayDate || show.start)}, ${show.venue?.name || 'TBA'}` : '',
+    })
+  );
   setStatus('Copied a markdown list with a YouTube and Spotify link per track.');
 }
 

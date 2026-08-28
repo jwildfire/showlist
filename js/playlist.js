@@ -78,17 +78,14 @@ export function playlistDescription({ tracks, artists, place, start, end, source
   ].join(' ');
 }
 
-/** A plain-text tracklist, for pasting anywhere that isn't a music service. */
+/**
+ * One `Artist - Title` per line: the format every playlist importer
+ * (Spotlistr, Soundiiz, TuneMyMusic) parses, and still readable by a human.
+ * Show details would break those parsers, so they live in the links and JSON
+ * exports instead.
+ */
 export function toText(tracks) {
-  return tracks
-    .map((t) => {
-      const show = t.show;
-      const when = show
-        ? ` — ${formatDay(show.displayDate || show.start)} at ${show.venue?.name || 'TBA'}`
-        : '';
-      return `${t.artistName} — ${t.title}${when}`;
-    })
-    .join('\n');
+  return tracks.map((t) => `${t.artistName} - ${t.title}`).join('\n');
 }
 
 export function toJson({ tracks, shows, place, start, end, source }) {

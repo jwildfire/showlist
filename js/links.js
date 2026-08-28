@@ -24,12 +24,16 @@ export function youtubeQuickPlaylist(videoIds) {
   return ids.length ? `https://www.youtube.com/watch_videos?video_ids=${ids.join(',')}` : '';
 }
 
-/** A markdown list, one line per track, with a link out to each service. */
-export function toLinkList(tracks) {
+/** A markdown list: track, where the artist is playing, and a link per service. */
+export function toLinkList(tracks, { formatShow } = {}) {
   return tracks
-    .map(
-      (track) =>
-        `- ${track.artistName} — ${track.title} · [YouTube](${youtubeSearch(track)}) · [Spotify](${spotifySearch(track)})`
-    )
+    .map((track) => {
+      const where = formatShow?.(track.show);
+      return (
+        `- ${track.artistName} — ${track.title}` +
+        (where ? ` (${where})` : '') +
+        ` · [YouTube](${youtubeSearch(track)}) · [Spotify](${spotifySearch(track)})`
+      );
+    })
     .join('\n');
 }

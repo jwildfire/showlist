@@ -70,6 +70,14 @@ Free tier: 5 requests/second, 5,000 requests/day. A scan costs 1–3 requests.
    into the Setup panel instead works too, but only for that one browser.)
    **Leave the client secret alone** — PKCE doesn't need one.
 
+**Dashboard erroring?** It's a heavy single-page app and it fails fairly often
+— usually transiently, and frequently because a tracking blocker or strict
+privacy mode breaks it. Try an incognito window with extensions off, or come
+back in a few hours. Meanwhile the site still works: build the playlist, press
+**Copy list**, and paste the `Artist - Title` lines into an importer like
+[Spotlistr](http://spotlistr.com) or [Soundiiz](https://soundiiz.com) — they
+run their own registered apps, so you just log into Spotify there.
+
 While your app is in Spotify's default *development mode*, only you and up to
 25 accounts you add under **User Management** in the dashboard can log in.
 That's normally plenty for a personal site; lifting it needs a quota-extension
