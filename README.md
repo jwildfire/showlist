@@ -181,6 +181,18 @@ Adding a service means writing one module with `resolveTracks` and
 `findShows` that returns shows in the shared shape. Both are registered in one
 line in `js/app.js`.
 
+## The weekly refresh
+
+A scheduled Claude Code session runs the sweep every **Monday at 08:00 ET**,
+following [sweep/README.md](sweep/README.md): it re-searches the venue
+calendars, prunes shows that have happened, validates the file, and pushes.
+The Pages deploy runs off that push, so the site is never more than a week
+stale — and the app shows the sweep date above the results.
+
+To change the cadence, or to stop it, edit the "Showlist weekly concert sweep"
+routine in your Claude routines. To run it on demand, ask Claude Code to
+"refresh the Showlist sweep".
+
 ## Sweeping a different area
 
 Nothing about the city is hard-coded. Edit `area` (label, lat/lon, radius) and
