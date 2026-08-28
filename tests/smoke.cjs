@@ -146,10 +146,24 @@ async function main() {
   assert(uris.length === tracks, `posted ${uris.length} uris for ${tracks} tracks`);
   steps.push(`saved ${uris.length} uris to Spotify`);
 
+  // 5b. Compact mode is on by default, roughly halves each row, and sticks.
+  assert(await page.locator('body.compact').count(), 'compact should be the default');
+  const rowHeight = async () => (await page.locator('.track').first().boundingBox()).height;
+  const compactHeight = await rowHeight();
+  await page.click('#compactToggle');
+  const roomyHeight = await rowHeight();
+  assert(
+    compactHeight < roomyHeight * 0.7,
+    `compact row ${compactHeight}px vs roomy ${roomyHeight}px — not much of a saving`
+  );
+  await page.click('#compactToggle');
+  steps.push(`compact rows ${compactHeight}px vs roomy ${roomyHeight}px`);
+
   // 6. Settings survive a reload.
   await page.reload();
   await page.waitForSelector('#find');
   assert((await page.inputValue('#source')) === 'demo', 'source should persist');
+  assert(await page.locator('body.compact').count(), 'compact preference should persist');
   steps.push('settings persisted across reload');
 
   // 7. Mobile layout doesn't overflow sideways.

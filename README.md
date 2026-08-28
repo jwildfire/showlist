@@ -26,6 +26,9 @@ rate limit.
 **2. Anywhere else — bring a Ticketmaster key.** Free, about two minutes (see
 below). Then any city or ZIP, any radius, live listings.
 
+Rows are compact by default so a month of shows fits on one screen — there's a
+**Compact** toggle in the header if you'd rather have room to breathe.
+
 Either way you get a real tracklist with **nothing connected**: song titles
 come from Apple's public iTunes Search API (keyless, no login), and every track
 carries a YouTube and a Spotify search link that works for anybody. Connect

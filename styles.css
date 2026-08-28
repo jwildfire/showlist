@@ -68,7 +68,7 @@ a {
   align-items: center;
   justify-content: space-between;
   padding: 22px clamp(16px, 4vw, 48px) 8px;
-  max-width: 1240px;
+  max-width: 1400px;
   margin: 0 auto;
 }
 
@@ -109,7 +109,7 @@ a {
 /* ---------- layout ---------- */
 
 main {
-  max-width: 1240px;
+  max-width: 1400px;
   margin: 0 auto;
   padding: 12px clamp(16px, 4vw, 48px) 40px;
   display: flex;
@@ -128,7 +128,7 @@ main {
 
 .columns {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
   gap: 18px;
   align-items: start;
 }
@@ -476,13 +476,14 @@ button:focus-visible {
 .shows,
 .tracks {
   list-style: none;
-  margin: 14px 0 0;
+  margin: 12px 0 0;
   padding: 0;
-  max-height: 620px;
+  max-height: min(72vh, 860px);
   overflow-y: auto;
+  overscroll-behavior: contain;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 7px;
 }
 
 .show {
@@ -552,11 +553,37 @@ button:focus-visible {
   display: flex;
   gap: 10px;
   align-items: baseline;
-  padding: 9px 12px;
+  padding: 8px 12px;
   border-radius: var(--radius-sm);
   background: var(--bg-elev-2);
   border: 1px solid transparent;
   font-size: 14px;
+}
+
+.track-main {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px 8px;
+  min-width: 0;
+}
+
+.preview-btn {
+  flex: none;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  border-radius: 50%;
+  border: 1px solid var(--line);
+  background: var(--bg-elev);
+  color: var(--text-dim);
+  font-size: 9px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.preview-btn:hover {
+  color: var(--accent-2);
+  border-color: currentColor;
 }
 
 .track-num {
@@ -709,7 +736,7 @@ button:focus-visible {
 }
 
 footer {
-  max-width: 1240px;
+  max-width: 1400px;
   margin: 0 auto;
   padding: 0 clamp(16px, 4vw, 48px) 32px;
   display: flex;
@@ -731,4 +758,160 @@ footer {
 
 .columns:not(:has(section:not([hidden]))) {
   display: none;
+}
+
+
+/* ---------- compact mode (the default) ----------
+   Same information, about half the vertical space: each track and each show
+   collapses onto one line, and the lists get taller. */
+
+.compact .shows,
+.compact .tracks {
+  gap: 3px;
+  max-height: min(78vh, 1100px);
+}
+
+.compact .track {
+  padding: 4px 10px;
+  font-size: 13px;
+  align-items: center;
+  gap: 8px;
+}
+
+.compact .track-num {
+  min-width: 20px;
+  font-size: 11px;
+}
+
+.compact .track-body {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.compact .track-main {
+  flex: 1 1 62%;
+  flex-wrap: nowrap;
+  align-items: baseline;
+  gap: 7px;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+/* The song is the point of the row: it gets the space, and never shrinks to
+   nothing behind a long venue name. */
+.compact .track-title {
+  flex: 0 1 auto;
+  min-width: 7em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.compact .track-artist {
+  flex: 0 1 auto;
+  min-width: 4em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.compact .track-artist::before {
+  content: '· ';
+  color: var(--text-faint);
+}
+
+.compact .track-links {
+  margin-top: 0;
+  flex: none;
+  gap: 8px;
+  font-size: 11.5px;
+}
+
+.compact .track-when {
+  flex: 0 1 auto;
+  max-width: 32%;
+  font-size: 11.5px;
+  text-align: right;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.compact .show {
+  padding: 6px 10px;
+  gap: 9px;
+  align-items: center;
+}
+
+.compact .show input[type='checkbox'] {
+  margin-top: 0;
+  width: 15px;
+  height: 15px;
+}
+
+.compact .show-body {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 2px 9px;
+}
+
+/* Let the meta's pieces flow inline with the artist name instead of forming a
+   second row of their own. */
+.compact .show-meta {
+  display: contents;
+  font-size: 12.5px;
+}
+
+.compact .show-body > *,
+.compact .show-meta > * {
+  font-size: 12.5px;
+}
+
+.compact .show-artist {
+  display: inline;
+  font-size: 14px;
+}
+
+.compact .badge {
+  font-size: 10px;
+  padding: 1px 6px;
+}
+
+/* The controls card carries a lot of chrome for something you set once. */
+.compact .card {
+  padding: 16px 18px;
+}
+
+.compact .control-grid {
+  gap: 10px 14px;
+}
+
+.compact .genres {
+  padding-top: 10px;
+}
+
+.compact .actions {
+  margin-top: 12px;
+}
+
+.compact .panel-head h2 {
+  font-size: 17px;
+}
+
+@media (max-width: 620px) {
+  /* One line per track stops being readable on a phone. */
+  .compact .track-body {
+    display: block;
+  }
+
+  .compact .track-main {
+    flex-wrap: wrap;
+    white-space: normal;
+  }
+
+  .compact .track-when {
+    display: none;
+  }
 }

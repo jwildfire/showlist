@@ -74,6 +74,7 @@ function venueLine(show, place) {
 }
 
 export function renderTracks(container, tracks) {
+  stopPreview();
   container.replaceChildren();
 
   tracks.forEach((track, i) => {
@@ -84,7 +85,9 @@ export function renderTracks(container, tracks) {
 
     const body = document.createElement('div');
     body.className = 'track-body';
-    const title = document.createElement('div');
+    const main = document.createElement('div');
+    main.className = 'track-main';
+    const title = document.createElement('span');
     title.className = 'track-title';
     if (track.url) {
       const link = document.createElement('a');
@@ -96,17 +99,15 @@ export function renderTracks(container, tracks) {
     } else {
       title.textContent = track.title;
     }
-    body.append(title, span('track-artist', track.artistName));
+    main.append(title, span('track-artist', track.artistName));
 
     // Search links work for everyone — no key, no login, nothing to connect.
     const links = document.createElement('div');
     links.className = 'track-links';
-    links.append(
-      outLink(youtubeSearch(track), 'YouTube'),
-      outLink(spotifySearch(track), 'Spotify')
-    );
     if (track.preview) links.append(preview(track.preview));
-    body.append(links);
+    links.append(outLink(youtubeSearch(track), 'YouTube'), outLink(spotifySearch(track), 'Spotify'));
+
+    body.append(main, links);
     li.append(body);
 
     if (track.show) {
@@ -150,14 +151,48 @@ function outLink(href, label) {
   return link;
 }
 
-/** A 30-second preview, when the catalogue hands us one. */
+let player = null;
+let playingButton = null;
+
+/**
+ * A 30-second preview as one small button. The native <audio> player is
+ * ~40px of chrome per row; this is 20px and stops whatever else was playing.
+ */
 function preview(src) {
-  const audio = document.createElement('audio');
-  audio.controls = true;
-  audio.preload = 'none';
-  audio.src = src;
-  audio.className = 'track-preview';
-  return audio;
+  const button = document.createElement('button');
+  button.type = 'button';
+  button.className = 'preview-btn';
+  button.textContent = '▶';
+  button.title = 'Play a 30-second preview';
+  button.setAttribute('aria-label', 'Play preview');
+
+  button.addEventListener('click', () => {
+    if (!player) {
+      player = new Audio();
+      player.addEventListener('ended', () => stopPreview());
+    }
+    if (playingButton === button) {
+      stopPreview();
+      return;
+    }
+    stopPreview();
+    player.src = src;
+    player.play().catch(() => stopPreview());
+    playingButton = button;
+    button.textContent = '⏸';
+    button.setAttribute('aria-label', 'Stop preview');
+  });
+
+  return button;
+}
+
+function stopPreview() {
+  player?.pause();
+  if (playingButton) {
+    playingButton.textContent = '▶';
+    playingButton.setAttribute('aria-label', 'Play preview');
+  }
+  playingButton = null;
 }
 
 function span(className, text) {

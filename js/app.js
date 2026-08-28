@@ -44,6 +44,7 @@ function init() {
   buildStaticControls();
   restoreControls();
   wireEvents();
+  applyCompact(store.getControls().compact);
   refreshServiceChips();
   finishSpotifyRedirect();
   el('redirectUri').value = store.redirectUri();
@@ -162,6 +163,11 @@ function wireEvents() {
   });
   el('importSpotify').addEventListener('click', () => guard(importWatchlist));
 
+  el('compactToggle').addEventListener('click', () => {
+    const compact = !store.getControls().compact;
+    store.setControls({ compact });
+    applyCompact(compact);
+  });
   el('setupBtn').addEventListener('click', () => el('setupDialog').showModal());
   el('saveSetup').addEventListener('click', saveSetup);
   el('copyRedirect').addEventListener('click', () => guard(copyRedirect));
@@ -172,6 +178,15 @@ function wireEvents() {
   el('youtubeChip').addEventListener('click', () => guard(toggleYouTube));
 
   el('errorClose').addEventListener('click', () => (el('error').hidden = true));
+}
+
+/** Compact mode is a body class — all the density lives in CSS. */
+function applyCompact(compact) {
+  document.body.classList.toggle('compact', compact);
+  const toggle = el('compactToggle');
+  toggle.classList.toggle('on', compact);
+  toggle.setAttribute('aria-pressed', String(compact));
+  toggle.title = compact ? 'Compact rows — click to loosen' : 'Roomy rows — click to compact';
 }
 
 function syncSourcePanels() {

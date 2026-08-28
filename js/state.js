@@ -13,7 +13,8 @@ export const DEFAULT_CONTROLS = {
   customEnd: '',
   genres: [], // empty = every genre
   tracksPerArtist: 3,
-  maxArtists: 40,
+  maxArtists: 80,
+  compact: true,
 };
 
 const DEFAULT_STATE = {
