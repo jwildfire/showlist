@@ -188,6 +188,15 @@ async function api(path, { method = 'GET', body, attempt = 1 } = {}) {
   if (!res.ok) {
     const detail = await res.json().catch(() => ({}));
     const message = detail.error?.message || detail.error_description || '';
+    // 403 on a valid token is almost always the app's own configuration, not
+    // anything a retry fixes.
+    if (res.status === 403) {
+      throw new Error(
+        'Spotify returned 403 Forbidden. The token is valid, so this is the app’s setup: ' +
+          'add your Spotify account under Settings → User Management in the developer ' +
+          'dashboard, and check the app has Web API enabled. Retrying will not help.'
+      );
+    }
     throw new Error(
       res.status === 429
         ? 'Spotify rate limit — too many lookups at once.'

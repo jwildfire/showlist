@@ -440,7 +440,12 @@ async function runBuild() {
     : '';
 
   if (fellBack) {
-    showError(new Error(`Spotify couldn't provide tracks (${fellBack}). Used the public catalogue instead, so these can't be saved to Spotify — try Build playlist again in a minute.`));
+    showError(
+      new Error(
+        `Spotify couldn't provide tracks, so these came from the public catalogue instead ` +
+          `and can't be saved to Spotify. ${fellBack}`
+      )
+    );
   }
   setStatus(
     tracks.length

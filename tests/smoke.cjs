@@ -299,7 +299,10 @@ async function main() {
   const fallbackTracks = await failing.locator('.track').count();
   assert(fallbackTracks > 0, 'a Spotify outage should not leave an empty playlist');
   const banner = await failing.locator('#errorText').textContent();
-  assert(/Spotify/.test(banner) && /403/.test(banner), `banner should name the cause, got "${banner}"`);
+  assert(
+    /Spotify/.test(banner) && /403/.test(banner) && /User Management/.test(banner),
+    `banner should name the cause and the fix, got "${banner}"`
+  );
   assert(
     await failing.locator('#saveSpotify').isDisabled(),
     'fallback tracks have no Spotify ids, so saving there must stay off'
