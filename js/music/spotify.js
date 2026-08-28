@@ -10,6 +10,8 @@ const API = 'https://api.spotify.com/v1';
 const STORE = 'showlist:spotify';
 const PENDING = 'showlist:spotify:pending';
 
+const MAX_ATTEMPTS = 3;
+
 const SCOPES = [
   'playlist-modify-private',
   'playlist-modify-public',
@@ -162,7 +164,7 @@ async function token() {
   return session.accessToken;
 }
 
-async function api(path, { method = 'GET', body, retry = true } = {}) {
+async function api(path, { method = 'GET', body, attempt = 1 } = {}) {
   const res = await fetch(path.startsWith('http') ? path : API + path, {
     method,
     headers: {
@@ -172,18 +174,25 @@ async function api(path, { method = 'GET', body, retry = true } = {}) {
     body: body ? JSON.stringify(body) : undefined,
   });
 
-  if (res.status === 401 && retry) {
+  if (res.status === 401 && attempt === 1) {
     write({ ...session, accessToken: null, expiresAt: 0 });
-    return api(path, { method, body, retry: false });
+    return api(path, { method, body, attempt: 2 });
   }
-  if (res.status === 429 && retry) {
-    const wait = Number(res.headers.get('Retry-After') || 2);
-    await new Promise((r) => setTimeout(r, Math.min(wait, 10) * 1000));
-    return api(path, { method, body, retry: false });
+  // Apps in Spotify's development mode have a tight rate limit, and a 40-artist
+  // build is ~80 calls. Back off and keep going rather than losing the batch.
+  if (res.status === 429 && attempt <= MAX_ATTEMPTS) {
+    const wait = Number(res.headers.get('Retry-After')) || attempt * 2;
+    await new Promise((r) => setTimeout(r, Math.min(wait, 12) * 1000));
+    return api(path, { method, body, attempt: attempt + 1 });
   }
   if (!res.ok) {
     const detail = await res.json().catch(() => ({}));
-    throw new Error(detail.error?.message || `Spotify error ${res.status}`);
+    const message = detail.error?.message || detail.error_description || '';
+    throw new Error(
+      res.status === 429
+        ? 'Spotify rate limit — too many lookups at once.'
+        : `Spotify error ${res.status}${message ? `: ${message}` : ''}`
+    );
   }
   return res.status === 204 ? null : res.json();
 }
@@ -268,7 +277,7 @@ export async function createPlaylist({ title, description, tracks, isPublic = fa
 /** Resolve many artists to their top tracks, politely. */
 export async function resolveTracks(artists, { perArtist = 3, market = 'US', onProgress } = {}) {
   let done = 0;
-  return pool(artists, 3, async (artist) => {
+  return pool(artists, 2, async (artist) => {
     try {
       const match = artist.spotifyId
         ? { id: artist.spotifyId, name: artist.name, exact: true }

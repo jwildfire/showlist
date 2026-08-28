@@ -402,7 +402,21 @@ async function runBuild() {
         onProgress: progress,
       });
 
-  const { tracks, missing } = buildTracklist(results);
+  let { tracks, missing } = buildTracklist(results);
+  let fellBack = null;
+
+  if (useSpotify && !tracks.length && artists.length) {
+    fellBack = commonReason(missing);
+    setStatus('Spotify lookups failed — falling back to the public catalogue…', true);
+    view.provider = 'itunes';
+    ({ tracks, missing } = buildTracklist(
+      await itunes.resolveTracks(artists, {
+        perArtist: controls.tracksPerArtist,
+        onProgress: progress,
+      })
+    ));
+  }
+
   view.tracks = tracks;
   view.missing = missing;
 
@@ -411,16 +425,38 @@ async function runBuild() {
   el('saveRow').hidden = tracks.length === 0;
   syncSaveButtons();
 
-  el('playlistNote').textContent = useSpotify
+  el('playlistNote').textContent = useSpotify && !fellBack
     ? "Top 3 tracks for each artist you've kept, from Spotify, in show order."
     : "Top 3 tracks for each artist you've kept, in show order. No Spotify app? Use the links on each track, or Copy list and paste it into an importer like Spotlistr.";
 
-  const skipped = missing.length ? ` Skipped ${missing.length} (${missing.slice(0, 3).map((m) => m.name).join(', ')}${missing.length > 3 ? '…' : ''}).` : '';
+  // Name the reason, not just the artists — "skipped 42" with no cause is
+  // useless when something systemic is wrong.
+  const reason = commonReason(missing);
+  const skipped = missing.length
+    ? ` Skipped ${missing.length} (${missing
+        .slice(0, 3)
+        .map((m) => m.name)
+        .join(', ')}${missing.length > 3 ? '…' : ''}${reason ? ` — ${reason}` : ''}).`
+    : '';
+
+  if (fellBack) {
+    showError(new Error(`Spotify couldn't provide tracks (${fellBack}). Used the public catalogue instead, so these can't be saved to Spotify — try Build playlist again in a minute.`));
+  }
   setStatus(
     tracks.length
       ? `Playlist ready: ${tracks.length} tracks.${skipped} Save it wherever you like.`
       : `Couldn't find tracks for any of those artists.${skipped}`
   );
+}
+
+/** The reason that stopped the most artists, for a status line worth reading. */
+function commonReason(missing) {
+  const counts = new Map();
+  for (const item of missing) {
+    if (!item.reason) continue;
+    counts.set(item.reason, (counts.get(item.reason) || 0) + 1);
+  }
+  return [...counts.entries()].sort((a, b) => b[1] - a[1])[0]?.[0] || '';
 }
 
 /* ---------- saving ---------- */

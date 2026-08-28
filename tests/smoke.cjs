@@ -247,6 +247,65 @@ async function main() {
   );
   steps.push('Connect Spotify uses the built-in client ID with a valid PKCE challenge');
 
+  // 10. When Spotify itself refuses, the build falls back instead of dying —
+  //     and says which error caused it.
+  const broken = await browser.newContext();
+  const failing = await broken.newPage();
+  failing.on('pageerror', (err) => errors.push(String(err)));
+  await failing.addInitScript(() => {
+    localStorage.setItem(
+      'showlist:spotify',
+      JSON.stringify({
+        clientId: 'test',
+        accessToken: 'fake',
+        refreshToken: 'fake-refresh',
+        expiresAt: Date.now() + 3600000,
+        profile: { id: 'me', name: 'Tester', market: 'US' },
+      })
+    );
+  });
+  await failing.route('https://api.spotify.com/**', async (route) => {
+    const url = route.request().url();
+    if (url.endsWith('/v1/me')) {
+      await route.fulfill(json({ id: 'me', display_name: 'Tester', country: 'US' }));
+      return;
+    }
+    await route.fulfill({
+      status: 403,
+      contentType: 'application/json',
+      body: JSON.stringify({ error: { status: 403, message: 'Forbidden' } }),
+    });
+  });
+  await failing.route('https://itunes.apple.com/**', async (route) => {
+    const term = new URL(route.request().url()).searchParams.get('term');
+    await route.fulfill(
+      json({
+        results: [1, 2, 3].map((n) => ({
+          kind: 'song',
+          trackId: `${term}-${n}`,
+          trackName: `Fallback ${n}`,
+          artistName: term,
+          trackViewUrl: 'https://music.apple.com/x',
+        })),
+      })
+    );
+  });
+  await failing.goto(base);
+  await failing.selectOption('#source', 'demo');
+  await failing.click('#find');
+  await failing.waitForSelector('.show');
+  await failing.click('#build');
+  await failing.waitForSelector('.track');
+  const fallbackTracks = await failing.locator('.track').count();
+  assert(fallbackTracks > 0, 'a Spotify outage should not leave an empty playlist');
+  const banner = await failing.locator('#errorText').textContent();
+  assert(/Spotify/.test(banner) && /403/.test(banner), `banner should name the cause, got "${banner}"`);
+  assert(
+    await failing.locator('#saveSpotify').isDisabled(),
+    'fallback tracks have no Spotify ids, so saving there must stay off'
+  );
+  steps.push(`Spotify 403 fell back to ${fallbackTracks} catalogue tracks, cause reported`);
+
   await browser.close();
   server.close();
 
