@@ -160,6 +160,47 @@ async function main() {
   assert(overflow <= 1, `page scrolls horizontally by ${overflow}px at 390px wide`);
   steps.push('no horizontal overflow at 390px');
 
+  // 8. The keyless path: nothing connected, songs from the public catalogue.
+  const clean = await browser.newContext();
+  const anon = await clean.newPage();
+  anon.on('console', (msg) => msg.type() === 'error' && errors.push(msg.text()));
+  anon.on('pageerror', (err) => errors.push(String(err)));
+  await anon.route('https://itunes.apple.com/**', async (route) => {
+    const term = new URL(route.request().url()).searchParams.get('term');
+    await route.fulfill(
+      json({
+        resultCount: 3,
+        results: [1, 2, 3].map((n) => ({
+          kind: 'song',
+          trackId: `${term}-${n}`,
+          trackName: `Track ${n}`,
+          artistName: term,
+          collectionName: 'An Album',
+          trackViewUrl: 'https://music.apple.com/x',
+          previewUrl: 'https://audio.example/x.m4a',
+        })),
+      })
+    );
+  });
+  await anon.goto(base);
+  await anon.selectOption('#source', 'demo');
+  await anon.selectOption('#when', '30');
+  await anon.click('#find');
+  await anon.waitForSelector('.show');
+  const anonShows = await anon.locator('.show').count();
+  await anon.click('#build');
+  await anon.waitForSelector('.track');
+  const anonTracks = await anon.locator('.track').count();
+  assert(
+    anonTracks === anonShows * 3,
+    `keyless build made ${anonTracks} tracks for ${anonShows} shows`
+  );
+  const ytHref = await anon.locator('.track-links a').first().getAttribute('href');
+  assert(/youtube\.com\/results\?search_query=/.test(ytHref), `bad YouTube link ${ytHref}`);
+  assert(await anon.locator('#saveSpotify').isDisabled(), 'Spotify save should be off when not connected');
+  assert(!(await anon.locator('#copyLinks').isDisabled()), 'Copy links should work with no account');
+  steps.push(`keyless path built ${anonTracks} tracks with search links, no login`);
+
   await browser.close();
   server.close();
 

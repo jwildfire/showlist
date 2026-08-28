@@ -3,6 +3,7 @@
 import { GENRES, genreLabel } from './genres.js';
 import { formatDay, formatTime } from './dates.js';
 import { milesBetween } from './geo.js';
+import { spotifySearch, youtubeSearch } from './links.js';
 
 export function renderGenreChips(container, selected, onToggle) {
   container.replaceChildren();
@@ -96,6 +97,16 @@ export function renderTracks(container, tracks) {
       title.textContent = track.title;
     }
     body.append(title, span('track-artist', track.artistName));
+
+    // Search links work for everyone — no key, no login, nothing to connect.
+    const links = document.createElement('div');
+    links.className = 'track-links';
+    links.append(
+      outLink(youtubeSearch(track), 'YouTube'),
+      outLink(spotifySearch(track), 'Spotify')
+    );
+    if (track.preview) links.append(preview(track.preview));
+    body.append(links);
     li.append(body);
 
     if (track.show) {
@@ -128,6 +139,25 @@ export function renderLinks(container, entries) {
     }
     container.append(row);
   }
+}
+
+function outLink(href, label) {
+  const link = document.createElement('a');
+  link.href = href;
+  link.target = '_blank';
+  link.rel = 'noopener';
+  link.textContent = label;
+  return link;
+}
+
+/** A 30-second preview, when the catalogue hands us one. */
+function preview(src) {
+  const audio = document.createElement('audio');
+  audio.controls = true;
+  audio.preload = 'none';
+  audio.src = src;
+  audio.className = 'track-preview';
+  return audio;
 }
 
 function span(className, text) {

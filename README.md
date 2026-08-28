@@ -26,7 +26,10 @@ rate limit.
 **2. Anywhere else — bring a Ticketmaster key.** Free, about two minutes (see
 below). Then any city or ZIP, any radius, live listings.
 
-Either way, connect Spotify to turn a lineup into a playlist. And there's one
+Either way you get a real tracklist with **nothing connected**: song titles
+come from Apple's public iTunes Search API (keyless, no login), and every track
+carries a YouTube and a Spotify search link that works for anybody. Connect
+Spotify only when you want it *saved* as a playlist in your account. And there's one
 button that does the whole thing: **⚡ Just do it for me** — next 14 days,
 every genre, top 3 tracks per artist, playlist built and waiting to be saved.
 
@@ -129,9 +132,9 @@ location + radius + dates + genres
                                         ▼
                      artists, deduped across nights, soonest first
                                         ▼
-              Spotify artist match → top 3 tracks   (or YouTube search)
+     Spotify top tracks (if connected)  ·  iTunes Search (if not)
                                         ▼
-                   playlist → Spotify · YouTube · clipboard · JSON
+        playlist → Spotify · YouTube · search links · clipboard · JSON
 ```
 
 Artists are deduped case- and punctuation-insensitively, so a band playing
@@ -143,10 +146,16 @@ date, so the soonest shows are at the top.
 | | Who |
 | --- | --- |
 | **Browsing the preloaded listings** | Anyone. No login, no key, nothing to install. |
+| **Building a tracklist** | Anyone — songs come from the keyless iTunes Search API. |
+| **The per-track YouTube / Spotify links, and *Copy links*** | Anyone. They're just search URLs. |
 | **Demo data** | Anyone. |
 | **Ticketmaster / Bandsintown listings** | Anyone who brings their own key or app id. |
 | **Saving to Spotify** | The app owner, plus up to **25 accounts** added under *User Management* in the Spotify dashboard. Anyone else can paste their own client ID in Setup and use their own app. |
 | **Saving to YouTube** | The owner plus test users on the Google consent screen (up to 100) — and all of them share **one** 10,000-unit daily quota, roughly 60 songs a day in total. |
+
+Only the two *save* rows are gated. Everything up to and including a finished,
+clickable tracklist works for a stranger who has never heard of either
+dashboard.
 
 Those caps are the OAuth providers' rules for unverified apps, not something
 this site imposes. Lifting Spotify's needs a quota-extension request; lifting
@@ -201,11 +210,14 @@ js/playlist.js        shows → artists → ordered tracklist
 js/sources/*.js       local (the preloaded sweep), ticketmaster, bandsintown, demo
 data/shows.json       the swept listings, and the area + venues they cover
 sweep/                the weekly refresh spec and its validator
-js/music/*.js         spotify (PKCE), youtube (Google Identity Services)
+js/music/*.js         spotify (PKCE), youtube (Google Identity Services),
+                      itunes (keyless track lookup)
+js/links.js           credential-free search URLs per track
 ```
 
-Adding a service means writing one module with `resolveTracks` and
-`createPlaylist`; adding a listing source means one module exporting `meta` and
+Track lookup and playlist saving are separate concerns: `resolveTracks` picks
+the songs (Spotify or iTunes), `createPlaylist` saves them (Spotify or
+YouTube). Adding a service means writing one module with either half; adding a listing source means one module exporting `meta` and
 `findShows` that returns shows in the shared shape. Both are registered in one
 line in `js/app.js`.
 

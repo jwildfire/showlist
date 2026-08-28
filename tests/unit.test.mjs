@@ -154,3 +154,20 @@ test('wallClock reads the time as written, whatever the viewer timezone', async 
   assert.equal(wallClock('2026-10-05').getHours(), 20);
   assert.equal(wallClock('nonsense'), null);
 });
+
+test('search links need no credentials and escape properly', async () => {
+  const links = await import('../js/links.js');
+  const track = { artistName: 'Black Country, New Road', title: 'Turbines / Pigs' };
+  assert.equal(
+    links.youtubeSearch(track),
+    'https://www.youtube.com/results?search_query=Black%20Country%2C%20New%20Road%20Turbines%20%2F%20Pigs'
+  );
+  assert.match(links.spotifySearch(track), /^https:\/\/open\.spotify\.com\/search\//);
+  assert.match(links.youtubeMusicSearch(track), /^https:\/\/music\.youtube\.com\/search\?q=/);
+  assert.equal(links.youtubeQuickPlaylist([]), '');
+  assert.equal(
+    links.youtubeQuickPlaylist(['aaa', 'bbb']),
+    'https://www.youtube.com/watch_videos?video_ids=aaa,bbb'
+  );
+  assert.match(links.toLinkList([track]), /^- Black Country, New Road — Turbines \/ Pigs · \[YouTube\]/);
+});

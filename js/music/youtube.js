@@ -161,32 +161,6 @@ export async function matchTracks(tracks, { onProgress } = {}) {
   }).then((rows) => rows.filter(Boolean));
 }
 
-/** No Spotify? Take each artist's top music videos straight from search. */
-export async function resolveTracks(artists, { perArtist = 3, onProgress } = {}) {
-  let done = 0;
-  return pool(artists, 2, async (artist) => {
-    try {
-      const videos = await searchVideos(artist.name, perArtist);
-      return {
-        artist,
-        tracks: videos.map((v) => ({
-          id: v.videoId,
-          videoId: v.videoId,
-          title: v.title,
-          artistName: artist.name,
-          url: v.url,
-          art: v.art,
-        })),
-        reason: videos.length ? null : 'nothing on YouTube',
-      };
-    } catch (err) {
-      return { artist, tracks: [], reason: err.message };
-    } finally {
-      onProgress?.(++done, artists.length);
-    }
-  });
-}
-
 export async function createPlaylist({ title, description, videoIds, isPublic = false, onProgress }) {
   const playlist = await api('/playlists', {
     method: 'POST',

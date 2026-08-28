@@ -579,6 +579,31 @@ button:focus-visible {
   color: var(--text-dim);
 }
 
+.track-links {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 4px;
+  font-size: 12px;
+  flex-wrap: wrap;
+}
+
+.track-links a {
+  color: var(--text-faint);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+}
+
+.track-links a:hover {
+  color: var(--accent-2);
+  border-bottom-color: currentColor;
+}
+
+.track-preview {
+  height: 26px;
+  max-width: 190px;
+}
+
 .track-when {
   font-size: 12px;
   color: var(--text-faint);

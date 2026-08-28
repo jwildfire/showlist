@@ -3,6 +3,7 @@
 import * as store from './state.js';
 import * as spotify from './music/spotify.js';
 import * as youtube from './music/youtube.js';
+import * as itunes from './music/itunes.js';
 import * as local from './sources/local.js';
 import * as ticketmaster from './sources/ticketmaster.js';
 import * as bandsintown from './sources/bandsintown.js';
@@ -19,6 +20,7 @@ import {
   toText,
 } from './playlist.js';
 import { renderGenreChips, renderLinks, renderShows, renderTracks } from './ui.js';
+import { toLinkList } from './links.js';
 
 const SOURCES = { local, ticketmaster, bandsintown, demo };
 const el = (id) => document.getElementById(id);
@@ -148,6 +150,7 @@ function wireEvents() {
   el('saveSpotify').addEventListener('click', () => guard(saveToSpotify));
   el('saveYouTube').addEventListener('click', () => guard(saveToYouTube));
   el('copyList').addEventListener('click', () => guard(copyList));
+  el('copyLinks').addEventListener('click', () => guard(copyLinks));
   el('downloadJson').addEventListener('click', downloadJson);
 
   el('selectAll').addEventListener('click', () => setAllShows(true));
@@ -210,7 +213,7 @@ async function guard(action) {
 }
 
 function toggleButtons(disabled) {
-  for (const id of ['find', 'auto', 'build', 'saveSpotify', 'saveYouTube', 'locate', 'importSpotify']) {
+  for (const id of ['find', 'auto', 'build', 'saveSpotify', 'saveYouTube', 'locate', 'importSpotify', 'copyLinks']) {
     el(id).disabled = disabled;
   }
   if (!disabled) syncSaveButtons();
@@ -369,24 +372,19 @@ async function runBuild() {
   view.artists = artists;
 
   const useSpotify = spotify.isConnected();
-  const useYouTube = !useSpotify && youtube.isConnected();
-  if (!useSpotify && !useYouTube) {
-    throw new Error('Connect Spotify (or YouTube) in Setup — that\'s where the songs come from.');
-  }
-
-  view.provider = useSpotify ? 'spotify' : 'youtube';
+  view.provider = useSpotify ? 'spotify' : 'itunes';
   setStatus(`Looking up top tracks for ${artists.length} artists…`, true);
 
+  const progress = (done, total) => setStatus(`Looking up top tracks… ${done}/${total} artists`, true);
   const results = useSpotify
     ? await spotify.resolveTracks(artists, {
         perArtist: controls.tracksPerArtist,
         market: spotify.account()?.market || 'US',
-        onProgress: (done, total) =>
-          setStatus(`Looking up top tracks… ${done}/${total} artists`, true),
+        onProgress: progress,
       })
-    : await youtube.resolveTracks(artists, {
+    : await itunes.resolveTracks(artists, {
         perArtist: controls.tracksPerArtist,
-        onProgress: (done, total) => setStatus(`Searching YouTube… ${done}/${total} artists`, true),
+        onProgress: progress,
       });
 
   const { tracks, missing } = buildTracklist(results);
@@ -397,6 +395,10 @@ async function runBuild() {
   el('trackCount').textContent = `${tracks.length} tracks · ${artists.length - missing.length} artists`;
   el('saveRow').hidden = tracks.length === 0;
   syncSaveButtons();
+
+  el('playlistNote').textContent = useSpotify
+    ? "Top 3 tracks for each artist you've kept, from Spotify, in show order."
+    : "Top 3 tracks for each artist you've kept, in show order. Connect Spotify to save this as a playlist — or use the links on each track.";
 
   const skipped = missing.length ? ` Skipped ${missing.length} (${missing.slice(0, 3).map((m) => m.name).join(', ')}${missing.length > 3 ? '…' : ''}).` : '';
   setStatus(
@@ -496,6 +498,12 @@ async function copyList() {
   setStatus('Tracklist copied to your clipboard.');
 }
 
+async function copyLinks() {
+  if (!view.tracks.length) throw new Error('Build a playlist first.');
+  await navigator.clipboard.writeText(toLinkList(view.tracks));
+  setStatus('Copied a markdown list with a YouTube and Spotify link per track.');
+}
+
 function downloadJson() {
   if (!view.tracks.length) {
     showError(new Error('Build a playlist first.'));
@@ -539,12 +547,6 @@ async function runAuto() {
 
   await runFind();
   if (!view.shows.length) return;
-  if (!spotify.isConnected() && !youtube.isConnected()) {
-    setStatus(
-      `Found ${view.shows.length} shows. Connect Spotify in Setup and press Build playlist to turn them into songs.`
-    );
-    return;
-  }
   await runBuild();
 }
 
@@ -569,7 +571,11 @@ function refreshServiceChips() {
 function syncSaveButtons() {
   if (view.busy) return;
   el('saveSpotify').disabled = !view.tracks.length || !spotify.isConnected() || view.provider !== 'spotify';
+  el('saveSpotify').title = spotify.isConnected()
+    ? ''
+    : 'Connect Spotify in Setup to save playlists to your account';
   el('saveYouTube').disabled = !view.tracks.length;
+  el('copyLinks').disabled = !view.tracks.length;
 }
 
 async function connectSpotify() {
